@@ -34,6 +34,34 @@ Get the latest version of KeyGo directly from the Play Store or GitHub:
 | Google Play Store | [<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Download from Google Play" height="80">](https://play.google.com/store/apps/details?id=de.davis.passwordmanager) |
 |      GitHub       |                                    [![GitHub tag](https://img.shields.io/github/release/OffRange/KeyGo?include_prereleases=&sort=semver)](https://github.com/OffRange/KeyGo/releases/)                                    |
 
+## KeyStan Desktop (Windows)
+
+KeyStan also runs on a PC. [`desktop/`](desktop/) is a Compose Multiplatform application that keeps
+the phone's Material 3 look and - more importantly - its **file format**: a backup exported on the PC
+restores on the phone, and a backup exported on the phone opens on the PC. No conversion step, no
+server, no account, nothing leaves the machine.
+
+* **A real local vault** on the desktop, sealed with a master passphrase (Argon2id → AES-256-GCM-SIV).
+* **Vaults, logins and cards** with the phone's fields: usernames, passwords, websites, TOTP secrets,
+  tags, notes, pinning, and the same per-vault icons.
+* **Live one-time codes** (RFC 6238; SHA-1/256/512, honouring an `otpauth://` URI's digits and period).
+* **Password generator** with an entropy readout.
+* **Import and export**: restore everything from a backup, or merge one into a chosen vault without
+  duplicating entries.
+* **Search** across titles, usernames, notes, tags and websites.
+
+Build the packaged application (a portable folder with `KeyStan.exe`, ~160 MB, no JVM required on the
+target machine):
+
+```bat
+cd desktop
+..\gradlew.bat -p . :app:createDistributable
+```
+
+The result is `desktop\app\build\compose\binaries\main\app\KeyStan\`. What it does, how it stores the
+vault, how compatibility with the Android app is verified, and what it deliberately does not do yet
+are all in [desktop/README.md](desktop/README.md).
+
 ## Build it Yourself
 
 ### Prerequisites

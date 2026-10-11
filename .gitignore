@@ -190,3 +190,10 @@ docs/superpowers/
 
 graphify-out/
 .gitattributes
+
+### Desktop build (desktop/)
+# Its own Gradle user home and smoke-test scratch dirs live in the repository so that a sandboxed
+# or offline build never has to write outside it.
+.gradle-desktop/
+.smoke/
+.tmp-src/
