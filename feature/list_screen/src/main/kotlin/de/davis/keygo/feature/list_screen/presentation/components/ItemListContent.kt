@@ -136,7 +136,10 @@ internal fun ItemListContent(
     BackHandler(enabled = uiState.isSelectionActive, onBack = onClearSelection)
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        // Pinned search bar: without the nested-scroll connection the offset can never move, so
+        // scrolling cannot drag the bar off the top. This Material 3 version ships no pinned
+        // scroll behaviour to ask for instead.
+        modifier = modifier,
         topBar = {
             if (uiState.isSelectionActive)
                 SelectionTopBar(
@@ -178,8 +181,11 @@ internal fun ItemListContent(
                             scrollBehavior = scrollBehavior,
                             // Transparent: the surface above already paints the header, and letting
                             // the app bar paint its own container would cover it with grey again.
+                            // The bar's own container is the grey slab whose square corners used to
+                            // show around the rounded field; the surface around it paints instead.
                             colors = SearchBarDefaults.appBarWithSearchColors(
-                                containerColor = Color.Transparent,
+                                appBarContainerColor = Color.Transparent,
+                                scrolledAppBarContainerColor = Color.Transparent,
                             ),
                         )
                     }

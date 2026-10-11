@@ -48,7 +48,7 @@ fun ItemListScreen(
     // Pinned: the search bar stays put while the list scrolls under it. It used to be
 // enter-always, which hid the whole bar on the first downward fling and left the user with
 // no way back to search except scrolling to the top.
-    scrollBehavior: SearchBarScrollBehavior = SearchBarDefaults.pinnedSearchBarScrollBehavior(),
+    scrollBehavior: SearchBarScrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
     collapsesNavigationBar: Boolean = false,
 ) {
     val viewModel = koinViewModel<ItemListViewModel> {
