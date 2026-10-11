@@ -45,9 +45,16 @@ carries its own Java runtime and the Skia renderer, and it runs on a machine wit
 Copy the whole `KeyStan` folder anywhere, including a USB stick; it is portable, and `KEYSTAN_DATA_DIR`
 decides where it keeps the vault.
 
-`packageMsi` and `packageExe` produce installers instead, but jpackage needs **WiX Toolset 3.x** on
-the `PATH`; its own bundled copy is not accepted, and the build fails with
-`Detected [light.exe] version ... but version 3.0 is required`.
+`packageMsi` builds an installer instead: per-user, with a Start-menu entry and a desktop shortcut.
+jpackage needs **WiX Toolset 3.x** - not 4 or 5 - with `candle.exe` and `light.exe` on the `PATH`.
+The Compose plugin downloads its own copy on first use, and a ready-made MSI is attached to the
+[desktop-v1.1.0 release](https://github.com/Nursqode/KeyStan/releases/tag/desktop-v1.1.0).
+
+Where WiX's ICE validation cannot reach the Windows Installer service - a sandboxed build, a service
+account, some CI runners - `packageMsi` fails with `LGHT0217 ... exited with 216 code` even though
+WiX itself is installed and working: the validation only *checks* the installer, but jpackage treats
+its failure as fatal. [build-msi.ps1](build-msi.ps1) links the same MSI from the WiX sources jpackage
+generates, with the validations suppressed; run it after `createDistributable`.
 
 Note that `gradlew clean` deletes the packaged folder along with the rest of `build/`; re-run
 `createDistributable` (or `build-app.cmd`) to get it back.

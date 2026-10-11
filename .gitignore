@@ -197,3 +197,7 @@ graphify-out/
 .gradle-desktop/
 .smoke/
 .tmp-src/
+
+# The packaged desktop application, copied out of build/ so that `gradlew clean` cannot erase the
+# ready-to-run folder (about 160 MB: it carries its own Java runtime and the Skia renderer).
+desktop/dist/

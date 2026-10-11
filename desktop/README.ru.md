@@ -46,9 +46,16 @@ desktop/
 Скопируйте всю папку `KeyStan` куда угодно, хоть на USB-флешку — приложение портативное, а
 `KEYSTAN_DATA_DIR` определяет, где оно хранит сейф.
 
-`packageMsi` и `packageExe` создают вместо этого установщики, но jpackage требует **WiX Toolset 3.x**
-в `PATH`; его собственная встроенная копия не принимается, и сборка падает с
-`Detected [light.exe] version ... but version 3.0 is required`.
+`packageMsi` собирает установщик: он ставится для текущего пользователя, создаёт пункт в меню
+«Пуск» и ярлык на рабочем столе. jpackage требует **WiX Toolset 3.x** — именно 3, не 4 и не 5 — с
+`candle.exe` и `light.exe` в `PATH`. Плагин Compose скачивает свою копию при первой сборке, а готовый
+MSI приложен к [релизу desktop-v1.1.0](https://github.com/Nursqode/KeyStan/releases/tag/desktop-v1.1.0).
+
+Там, где ICE-проверки WiX не могут достучаться до службы Windows Installer — сборка в песочнице,
+служебная учётная запись, некоторые CI — `packageMsi` падает с `LGHT0217 ... exited with 216 code`,
+хотя сама WiX установлена и работает: проверки лишь *контролируют* установщик, но jpackage считает
+их сбой фатальным. [build-msi.ps1](build-msi.ps1) линкует тот же MSI из сгенерированных jpackage
+исходников WiX, подавляя проверки; запускать после `createDistributable`.
 
 Учтите, что `gradlew clean` удаляет упакованную папку вместе с остальным содержимым `build/`;
 запустите `createDistributable` (или `build-app.cmd`) заново, чтобы вернуть её.
