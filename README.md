@@ -1,70 +1,72 @@
-**English** · [Русский](README.ru.md)
+**Русский** · [English](README.en.md)
 
 # KeyStan
 
 [![Release](https://img.shields.io/github/v/release/Nursqode/KeyStan?include_prereleases&sort=semver)](https://github.com/Nursqode/KeyStan/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-Android%20%C2%B7%20Windows-informational)](#keystan-for-windows)
+[![Platforms](https://img.shields.io/badge/platforms-Android%20%C2%B7%20Windows-informational)](#keystan-для-windows)
 
-A private password manager: passwords, passkeys and cards, encrypted on your own device. No account,
-no server, no telemetry — and a Windows companion that shares the same vault format, so a backup
-written on one side opens on the other.
+Приватный менеджер паролей: пароли, passkeys и карты, зашифрованные на вашем же устройстве. Ни
+аккаунта, ни сервера, ни телеметрии — плюс версия для Windows, с тем же форматом сейфа: бэкап,
+записанный на одной стороне, открывается на другой.
 
-**KeyStan is a fork of [KeyGo](https://github.com/OffRange/KeyGo)** by Davis Alessandru, under its own
-name and its own application id, with a few interface changes of its own. What was modified is recorded
-in [NOTICE](NOTICE); the licence stays GPLv3, like the original.
+**KeyStan — форк [KeyGo](https://github.com/OffRange/KeyGo)** (автор Davis Alessandru), под своим
+именем и со своим идентификатором приложения, с рядом собственных изменений в интерфейсе. Что именно
+изменено — записано в [NOTICE](NOTICE); лицензия остаётся GPLv3, как у оригинала.
 
-## Screenshots
+## Скриншоты
 
 <div align="center">
-    <img src="docs/assets/android/01_vaults.png" width="30%" alt="Item list"/>
-    <img src="docs/assets/android/02_item.png" width="30%" alt="Item details"/>
-    <img src="docs/assets/android/03_generator.png" width="30%" alt="Password generator"/>
+    <img src="docs/assets/android/01_vaults.png" width="30%" alt="Список записей"/>
+    <img src="docs/assets/android/02_item.png" width="30%" alt="Карточка записи"/>
+    <img src="docs/assets/android/03_generator.png" width="30%" alt="Генератор паролей"/>
 </div>
 
-## Features
+## Возможности
 
-* **Everything local.** Vaults are encrypted on the device with a key derived from your master
-  password (Argon2id), and every item is sealed individually. There is no cloud to trust.
-* **Passwords, passkeys and cards** in one place, with tags, notes, websites and pinning.
-* **Two-factor codes** built in: RFC 6238 TOTP, right next to the login it belongs to.
-* **Password health**, including a check against known breaches — the only feature that ever talks to
-  the network, and only while you leave it on (it sends five characters of a hash, never a password).
-* **Autofill** system-wide, so the vault is there where the passwords are needed.
-* **Import and export** of backups as JSON or CSV.
+* **Всё локально.** Сейфы шифруются на устройстве ключом, выведенным из мастер-пароля (Argon2id), а
+  каждая запись запечатывается отдельно. Доверять облаку не нужно — его нет.
+* **Пароли, passkeys и карты** в одном месте, с метками, заметками, сайтами и закреплением.
+* **Двухфакторные коды** встроены: TOTP по RFC 6238, прямо рядом с логином, к которому относится.
+* **Здоровье паролей**, включая проверку по известным утечкам — единственная функция, которая вообще
+  обращается к сети, и только пока вы её не выключите (наружу уходят пять символов хэша, никогда —
+  сам пароль).
+* **Автозаполнение** по всей системе: сейф оказывается там, где нужны пароли.
+* **Импорт и экспорт** бэкапов в JSON и CSV.
 
-## Download
+## Скачать
 
-| Platform | Where |
+| Платформа | Где |
 |---|---|
-| Android | [Releases](https://github.com/Nursqode/KeyStan/releases) — the APK is attached to every release |
-| Windows | [Releases](https://github.com/Nursqode/KeyStan/releases?q=desktop) — portable build and MSI installer |
+| Android | [Релизы](https://github.com/Nursqode/KeyStan/releases) — APK приложен к каждому релизу |
+| Windows | [Релизы](https://github.com/Nursqode/KeyStan/releases?q=desktop) — портативная сборка и установщик MSI |
 
-Not on Google Play: the fork has its own application id (`de.nursqode.keystan`), and publishing there
-is a separate step.
+В Google Play форка нет: у него свой идентификатор приложения (`de.nursqode.keystan`), а публикация
+там — отдельный шаг.
 
-> **Upgrading from KeyGo?** On Android, KeyStan is a different application — it installs beside KeyGo
-> rather than over it, and does not read KeyGo's data. Export a backup in KeyGo and import it in
-> KeyStan; the format is the same.
+> **Переходите с KeyGo?** На Android KeyStan — другое приложение: он встаёт рядом с KeyGo, а не
+> поверх, и данные KeyGo не читает. Перенос делается так: экспорт бэкапа в KeyGo → импорт в KeyStan.
+> Формат один и тот же.
 
-## KeyStan for Windows
+## KeyStan для Windows
 
-The `desktop/` directory holds a Compose Multiplatform application: the same Material 3 look, the same
-vault, and the same sealed JSON backup format. A file exported on the PC restores on the phone, and a
-phone backup opens on the PC.
+В каталоге `desktop/` — приложение на Compose Multiplatform: тот же стиль Material 3, тот же сейф и
+тот же формат зашифрованного JSON-бэкапа. Файл, экспортированный на ПК, восстанавливается на
+телефоне, а бэкап с телефона открывается на ПК.
 
-* master password and a single vault file, rewritten atomically on every edit;
-* vaults, logins and cards — usernames, passwords, websites, TOTP secrets, tags, notes, pinning;
-* live one-time codes, a password generator with an entropy readout, search across everything;
-* import and export, either replacing everything or merging into a chosen vault without duplicates;
-* interface in English and Russian, following the system language by default.
+* мастер-пароль и один файл сейфа, перезаписываемый атомарно при каждом изменении;
+* сейфы, логины и карты — имена пользователей, пароли, сайты, секреты TOTP, метки, заметки,
+  закрепление;
+* живые одноразовые коды, генератор паролей с оценкой стойкости, поиск по всему содержимому;
+* импорт и экспорт: заменить всё или влить в выбранный сейф без дублей;
+* интерфейс на русском и английском, по умолчанию — как в системе.
 
-How the compatibility is verified — against the Rust core's frozen vectors, re-sealing a real Android
-backup into a byte-identical ciphertext — is described in [desktop/README.md](desktop/README.md).
+Как проверяется совместимость — по замороженным векторам Rust-ядра, с пересборкой настоящего
+Android-бэкапа в байт-в-байт тот же шифротекст — описано в [desktop/README.md](desktop/README.md).
 
-## Build it yourself
+## Собрать самому
 
-Android (needs Rust, the Android SDK and the NDK; the Gradle build drives the Rust half itself):
+Android (нужны Rust, Android SDK и NDK; Gradle сам собирает Rust-часть):
 
 ```bash
 ./gradlew assemblePlayStoreDebug
@@ -77,8 +79,8 @@ cd desktop
 ..\gradlew.bat -p . :app:createDistributable
 ```
 
-## Licence
+## Лицензия
 
-GNU General Public License v3.0 or later — see [LICENSE](LICENSE). Copyright in the original work
-remains with the KeyGo authors; this fork adds its own changes under the same licence, and
-[NOTICE](NOTICE) lists them.
+GNU General Public License v3.0 или новее — см. [LICENSE](LICENSE). Авторские права на оригинальную
+работу остаются у авторов KeyGo; этот форк добавляет свои изменения под той же лицензией, а их
+перечень — в [NOTICE](NOTICE).
