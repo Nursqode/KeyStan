@@ -1,108 +1,84 @@
 **English** · [Русский](README.ru.md)
 
-# KeyGo - Your Secure Digital Vault
+# KeyStan
 
-[![GitHub release](https://img.shields.io/github/release/OffRange/KeyGo?include_prereleases=&sort=semver)](https://github.com/OffRange/KeyGo/releases/)
+[![Release](https://img.shields.io/github/v/release/Nursqode/KeyStan?include_prereleases&sort=semver)](https://github.com/Nursqode/KeyStan/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-Android%20%C2%B7%20Windows-informational)](#keystan-for-windows)
 
-KeyGo is a secure, open-source Android password manager that allows you to store passwords,
-passkeys, and credit card information encrypted entirely on your local device.
+A private password manager: passwords, passkeys and cards, encrypted on your own device. No account,
+no server, no telemetry — and a Windows companion that shares the same vault format, so a backup
+written on one side opens on the other.
 
-![KeyGo Banner](docs/assets/feature-graphic.png)
+**KeyStan is a fork of [KeyGo](https://github.com/OffRange/KeyGo)** by Davis Alessandru, under its own
+name and its own application id, with a few interface changes of its own. What was modified is recorded
+in [NOTICE](NOTICE); the licence stays GPLv3, like the original.
 
-### Driven by a modern & intuitive design
+## Screenshots
 
 <div align="center">
-    <img src="docs/assets/phone/01_hero.png" width="32%" alt="Vault List Screenshot"/>
-    <img src="docs/assets/phone/02_password_health.png" width="32%" alt="Password Health Screenshot"/>
-    <img src="docs/assets/phone/03_2fa.png" width="32%" alt="Two-Factor Authenticator Screenshot"/>
+    <img src="docs/assets/android/01_vaults.png" width="30%" alt="Item list"/>
+    <img src="docs/assets/android/02_item.png" width="30%" alt="Item details"/>
+    <img src="docs/assets/android/03_generator.png" width="30%" alt="Password generator"/>
 </div>
 
 ## Features
 
-* **100% Free & Open Source:** All features are available for free.
-* **Local-Only Storage:** Your data will never leave your device.
-* **Comprehensive Management:** Store passwords, passkeys, and credit cards.
-* **MFA Support:** Built-in authenticator for TOTP tokens.
-* **Advanced Security:** Per-item, industry-standard encryption & password health scanning.
-* **Seamless Integration:** System-wide autofill service for all your credentials.
+* **Everything local.** Vaults are encrypted on the device with a key derived from your master
+  password (Argon2id), and every item is sealed individually. There is no cloud to trust.
+* **Passwords, passkeys and cards** in one place, with tags, notes, websites and pinning.
+* **Two-factor codes** built in: RFC 6238 TOTP, right next to the login it belongs to.
+* **Password health**, including a check against known breaches — the only feature that ever talks to
+  the network, and only while you leave it on (it sends five characters of a hash, never a password).
+* **Autofill** system-wide, so the vault is there where the passwords are needed.
+* **Import and export** of backups as JSON or CSV.
 
 ## Download
 
-Get the latest version of KeyGo directly from the Play Store or GitHub:
+| Platform | Where |
+|---|---|
+| Android | [Releases](https://github.com/Nursqode/KeyStan/releases) — the APK is attached to every release |
+| Windows | [Releases](https://github.com/Nursqode/KeyStan/releases?q=desktop) — portable build and MSI installer |
 
-|     Platform      |                                                                                                          Status                                                                                                           |
-|:-----------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| Google Play Store | [<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Download from Google Play" height="80">](https://play.google.com/store/apps/details?id=de.davis.passwordmanager) |
-|      GitHub       |                                    [![GitHub tag](https://img.shields.io/github/release/OffRange/KeyGo?include_prereleases=&sort=semver)](https://github.com/OffRange/KeyGo/releases/)                                    |
+Not on Google Play: the fork has its own application id (`de.nursqode.keystan`), and publishing there
+is a separate step.
 
-## KeyStan Desktop (Windows)
+> **Upgrading from KeyGo?** On Android, KeyStan is a different application — it installs beside KeyGo
+> rather than over it, and does not read KeyGo's data. Export a backup in KeyGo and import it in
+> KeyStan; the format is the same.
 
-KeyStan also runs on a PC. [`desktop/`](desktop/) is a Compose Multiplatform application that keeps
-the phone's Material 3 look and - more importantly - its **file format**: a backup exported on the PC
-restores on the phone, and a backup exported on the phone opens on the PC. No conversion step, no
-server, no account, nothing leaves the machine.
+## KeyStan for Windows
 
-* **A real local vault** on the desktop, sealed with a master passphrase (Argon2id → AES-256-GCM-SIV).
-* **Vaults, logins and cards** with the phone's fields: usernames, passwords, websites, TOTP secrets,
-  tags, notes, pinning, and the same per-vault icons.
-* **Live one-time codes** (RFC 6238; SHA-1/256/512, honouring an `otpauth://` URI's digits and period).
-* **Password generator** with an entropy readout.
-* **Import and export**: restore everything from a backup, or merge one into a chosen vault without
-  duplicating entries.
-* **Search** across titles, usernames, notes, tags and websites.
-* **English and Russian interface**, following the system language by default.
+The `desktop/` directory holds a Compose Multiplatform application: the same Material 3 look, the same
+vault, and the same sealed JSON backup format. A file exported on the PC restores on the phone, and a
+phone backup opens on the PC.
 
-Build the packaged application (a portable folder with `KeyStan.exe`, ~160 MB, no JVM required on the
-target machine):
+* master password and a single vault file, rewritten atomically on every edit;
+* vaults, logins and cards — usernames, passwords, websites, TOTP secrets, tags, notes, pinning;
+* live one-time codes, a password generator with an entropy readout, search across everything;
+* import and export, either replacing everything or merging into a chosen vault without duplicates;
+* interface in English and Russian, following the system language by default.
+
+How the compatibility is verified — against the Rust core's frozen vectors, re-sealing a real Android
+backup into a byte-identical ciphertext — is described in [desktop/README.md](desktop/README.md).
+
+## Build it yourself
+
+Android (needs Rust, the Android SDK and the NDK; the Gradle build drives the Rust half itself):
+
+```bash
+./gradlew assemblePlayStoreDebug
+```
+
+Windows:
 
 ```bat
 cd desktop
 ..\gradlew.bat -p . :app:createDistributable
 ```
 
-The result is `desktop\app\build\compose\binaries\main\app\KeyStan\`. What it does, how it stores the
-vault, how compatibility with the Android app is verified, and what it deliberately does not do yet
-are all in [desktop/README.md](desktop/README.md).
+## Licence
 
-## Build it Yourself
-
-### Prerequisites
-
-You will need to install **Rust**. Rust is used for cryptographic functions and other amazing
-features, like generating backups.
-
-If you are using Linux or macOS, simply run this in your terminal:
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-*(For Windows, download the installer from the [official Rust website](https://rustup.rs/).)*
-
-### Generate the APK
-
-Once you have Rust installed, you are ready to build the application by running the following
-command in the project root:
-
-```bash
-./gradlew assembleFdroidRelease
-```
-
-Your compiled APK will be generated in `app/build/outputs/apk/`.
-
-### Install on your Device
-
-1. Connect your phone to your computer using a USB cable.
-2. [Enable USB debugging on your device](https://developer.android.com/studio/debug/dev-options#Enable-debugging).
-3. Install the APK using ADB by running:
-
-```bash
-adb install <path-to-apk-file>
-```
-
-## License
-
-Licensed under the **GNU General Public License v3.0**. This means KeyGo is free software: you can
-redistribute and/or modify it under GPLv3 terms. For full details, see
-the [LICENSE](https://www.google.com/search?q=LICENSE) file.
+GNU General Public License v3.0 or later — see [LICENSE](LICENSE). Copyright in the original work
+remains with the KeyGo authors; this fork adds its own changes under the same licence, and
+[NOTICE](NOTICE) lists them.
