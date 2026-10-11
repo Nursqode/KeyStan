@@ -1,0 +1,92 @@
+name: Build APK and attach it to a release
+
+# Builds the Android app from a tag and attaches the APK to that tag's GitHub release, so a fork can
+# be installed without anyone setting up Rust, the NDK and cargo-ndk by hand. The PlayStore workflow
+# next door does the same build for the store; this one exists for GitHub itself.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build and attach the APK to'
+        required: true
+        type: string
+  push:
+    tags: [ 'v*' ]
+
+# Uploading release assets needs write access; nothing else does.
+permissions:
+  contents: write
+
+concurrency:
+  group: apk-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # The version comes from the git tag (see the git-semver plugin), so the tag has to be
+      # resolved first and checked out - a branch checkout fetches no tags at all.
+      - name: Resolve the tag to build
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ -n "$INPUT_TAG" ]; then
+            tag="$INPUT_TAG"
+          else
+            tag="${GITHUB_REF_NAME}"
+          fi
+          if [ -z "$tag" ]; then
+            echo "::error::No tag to build"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Building $tag"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # The Rust half is built by the :rust Gradle module itself: `make all` installs cargo-ndk and
+      # the Android targets on first use (rust-toolchain.toml pins the toolchain and its targets).
+      # Only the NDK location has to be passed through - cargo-ndk looks for ANDROID_NDK_HOME, which
+      # the runner does not set under that name.
+      - name: Point the Rust build at the NDK
+        run: echo "ANDROID_NDK_HOME=${ANDROID_NDK_LATEST_HOME:-$ANDROID_NDK_HOME}" >> "$GITHUB_ENV"
+
+      # Debug, not release, on purpose: a release APK is signed with the KEYSTORE_* secrets, and an
+      # APK published here is for installing by hand, which debug signing already allows. Switch this
+      # to assemblePlayStoreRelease once those secrets exist.
+      - name: Build the APK
+        run: ./gradlew :app:assemblePlayStoreDebug --stacktrace
+
+      - name: Publish the release and attach the APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          mapfile -t apks < <(find app/build/outputs/apk -name '*.apk' -type f)
+          if [ "${#apks[@]}" -eq 0 ]; then
+            echo "::error::The build produced no APK"
+            exit 1
+          fi
+          printf 'artifact: %s\n' "${apks[@]}"
+
+          # Re-running for an existing tag replaces the asset instead of failing.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "KeyStan $TAG" --generate-notes
+          fi
+          gh release upload "$TAG" "${apks[@]}" --clobber
