@@ -126,7 +126,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: de.davis.passwordmanager
+          packageName: de.nursqode.keystan
           releaseFiles: app/build/outputs/bundle/playStoreRelease/*.aab
           tracks: internal
           whatsNewDirectory: ${{ steps.notes.outputs.dir }}

@@ -91,10 +91,10 @@
     <string name="password_health_detail_placeholder">Wähle einen Eintrag aus, um ihn hier zu sehen</string>
 
     <string name="health_notifications_enable">Benachrichtigungen aktivieren</string>
-    <string name="health_notifications_description">KeyGo erinnert dich, wenn es Sicherheitsprobleme mit deinen Passwörtern gibt</string>
+    <string name="health_notifications_description">KeyStan erinnert dich, wenn es Sicherheitsprobleme mit deinen Passwörtern gibt</string>
     <string name="notification_permission_title">Benachrichtigungen erlauben</string>
-    <string name="notification_permission_rationale">Damit KeyGo dich an Passwörter erinnern kann, die du dir ansehen solltest, braucht die App die Berechtigung für Benachrichtigungen.</string>
-    <string name="notification_permission_denied_permanently">Benachrichtigungen sind für KeyGo deaktiviert. Wenn du Erinnerungen zu deinen Passwörtern bekommen möchtest, erlaube sie in den App-Einstellungen.</string>
+    <string name="notification_permission_rationale">Damit KeyStan dich an Passwörter erinnern kann, die du dir ansehen solltest, braucht die App die Berechtigung für Benachrichtigungen.</string>
+    <string name="notification_permission_denied_permanently">Benachrichtigungen sind für KeyStan deaktiviert. Wenn du Erinnerungen zu deinen Passwörtern bekommen möchtest, erlaube sie in den App-Einstellungen.</string>
     <string name="notification_permission_grant">Erlauben</string>
     <string name="notification_permission_open_settings">Einstellungen öffnen</string>
     <string name="notification_permission_cancel">Abbrechen</string>

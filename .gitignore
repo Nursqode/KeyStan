@@ -201,3 +201,13 @@ graphify-out/
 # The packaged desktop application, copied out of build/ so that `gradlew clean` cannot erase the
 # ready-to-run folder (about 160 MB: it carries its own Java runtime and the Skia renderer).
 desktop/dist/
+.mingw/
+.tmp-*/
+.tmp-build/
+.wix311/
+.msi-input/
+.wixprobe/
+.android-*.ps1
+.build-msi.ps1
+.release-notes*.md
+.commit-msg*.txt

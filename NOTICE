@@ -1,0 +1,28 @@
+KeyStan
+=======
+
+Copyright (C) 2026 Nursqode
+
+This program is a modified version of KeyGo (https://github.com/OffRange/KeyGo),
+Copyright (C) Davis Alessandru and contributors, distributed under the same
+licence, the GNU General Public License version 3 or later (see LICENSE).
+
+Modifications
+-------------
+
+Changes were made to the original work, starting in 2026; they are recorded in
+the git history of https://github.com/Nursqode/KeyStan. In outline:
+
+* the application was renamed to KeyStan and its application id changed to
+  de.nursqode.keystan, so that it neither collides with nor presents itself as
+  the original application;
+* a desktop application for Windows was added under desktop/, reading and writing
+  the same vault format as the Android app;
+* work on the Android interface: the search bar is pinned, the header shows the
+  application name and version on a themed surface, and list rows are compact;
+* the desktop application ships an English and Russian text catalogue, following
+  the system language by default.
+
+The GPL asks modified versions to carry a notice of the change and its date; this
+file is that notice. Copyright in the original work remains with its authors, and
+nothing here transfers or claims it.

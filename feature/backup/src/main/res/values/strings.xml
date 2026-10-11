@@ -55,12 +55,12 @@
     <string name="encryption_method_passphrase_description">Choose a passphrase. The backup can be restored on any device with it.</string>
     <string name="encryption_method_ark">This device &amp; account</string>
     <string name="encryption_method_ark_description">Uses this account\'s key - nothing to remember. Restores only into this account.</string>
-    <string name="encryption_method_ark_warning">Only this account on this device can decrypt this backup. If you reinstall KeyGo, lose your device, or reset your account, the file stays encrypted forever and everything in it is lost. Nobody can recover it.</string>
+    <string name="encryption_method_ark_warning">Only this account on this device can decrypt this backup. If you reinstall KeyStan, lose your device, or reset your account, the file stays encrypted forever and everything in it is lost. Nobody can recover it.</string>
 
     <string name="csv_preset_browser">Browser-compatible</string>
     <string name="csv_preset_browser_description">Columns: name, url, username, password, note. Importable by Chrome, Edge and others. No TOTP.</string>
-    <string name="csv_preset_keygo">KeyGo</string>
-    <string name="csv_preset_keygo_description">Every column including TOTP. Re-imports into KeyGo without loss.</string>
+    <string name="csv_preset_KeyStan">KeyStan</string>
+    <string name="csv_preset_KeyStan_description">Every column including TOTP. Re-imports into KeyStan without loss.</string>
 
     <string name="select_file_format_title">Select File Format</string>
     <string name="select_schedule_title">Backup Schedule</string>
@@ -100,9 +100,9 @@
     <string name="import_try_again">Back</string>
     <string name="import_error_file_unreadable">Couldn\'t read the selected file.</string>
     <string name="import_error_empty">The selected file is empty.</string>
-    <string name="import_error_unsupported">KeyGo imports .json and .csv files. Pick a file with one of those extensions.</string>
+    <string name="import_error_unsupported">KeyStan imports .json and .csv files. Pick a file with one of those extensions.</string>
     <string name="import_error_nothing">There was nothing to import in this backup.</string>
-    <string name="import_error_parse">This file isn\'t a valid KeyGo backup.</string>
+    <string name="import_error_parse">This file isn\'t a valid KeyStan backup.</string>
     <string name="import_error_session_locked">Your vault is locked. Unlock it and try again.</string>
     <string name="import_error_generic">Something went wrong during import.</string>
 
@@ -113,7 +113,7 @@
     <string name="schedule_one_time_title">One-time backup</string>
     <string name="schedule_one_time_description">Export once to a location you choose. Nothing is saved or repeated.</string>
     <string name="schedule_recurring_title">Recurring backup</string>
-    <string name="schedule_recurring_description">KeyGo automatically creates a fresh backup on the schedule you set.</string>
+    <string name="schedule_recurring_description">KeyStan automatically creates a fresh backup on the schedule you set.</string>
     <string name="schedule_recurring_requires_encryption">Recurring backups require an encrypted format. Choose JSON to schedule automatic backups.</string>
 
     <string name="schedule_repeat_every_label">Repeat every</string>
@@ -192,7 +192,7 @@
     <string name="csv_type_verify_hint">Auto-detected - please verify</string>
     <string name="csv_type_duplicate_error">This type is used by another column</string>
 
-    <string name="map_columns_intro_title">Match your CSV to KeyGo</string>
+    <string name="map_columns_intro_title">Match your CSV to KeyStan</string>
     <string name="csv_column_source_label">Column %1$d in your file</string>
     <string name="csv_type_row_label">Import as</string>
     <string name="csv_samples_label">Example values from this column</string>

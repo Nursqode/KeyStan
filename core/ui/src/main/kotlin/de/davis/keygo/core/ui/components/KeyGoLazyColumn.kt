@@ -335,7 +335,9 @@ private fun KeyGoInlineHeader(
 }
 
 @Stable
-private fun Modifier.headerSize() = this.size(40.dp)
+// The leading column is as tall as the icon it can hold and no taller: it used to be 40.dp, which
+// set a floor under every row's height even when the row showed nothing there.
+private fun Modifier.headerSize() = this.size(28.dp)
 
 private val HeaderStartPadding = 16.dp
 

@@ -27,9 +27,9 @@
         <item quantity="other">%1$d Einträge konnten nicht gelesen werden und wurden nicht übernommen. Alles andere ist jetzt in deinem Tresor.</item>
     </plurals>
     <string name="migration_failed_title">Import unvollständig</string>
-    <string name="migration_failed_description">Deine Einträge konnten nicht importiert werden. Es ist nichts verloren gegangen – KeyGo versucht es beim nächsten Öffnen einfach noch einmal.</string>
+    <string name="migration_failed_description">Deine Einträge konnten nicht importiert werden. Es ist nichts verloren gegangen – KeyStan versucht es beim nächsten Öffnen einfach noch einmal.</string>
     <string name="biometric_reset_title">Biometrische Entsperrung deaktiviert</string>
-    <string name="biometric_reset_description">Dein Gerät kann den Tresor mit dem für die biometrische Entsperrung gespeicherten Schlüssel nicht mehr öffnen, deshalb hat KeyGo ihn entfernt. Melde dich mit deinem Hauptpasswort an und schalte die biometrische Entsperrung danach in den Einstellungen wieder ein.</string>
+    <string name="biometric_reset_description">Dein Gerät kann den Tresor mit dem für die biometrische Entsperrung gespeicherten Schlüssel nicht mehr öffnen, deshalb hat KeyStan ihn entfernt. Melde dich mit deinem Hauptpasswort an und schalte die biometrische Entsperrung danach in den Einstellungen wieder ein.</string>
     <string name="got_it">Verstanden</string>
 
     <string name="retry">Erneut versuchen</string>

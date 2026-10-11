@@ -47,7 +47,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "de.davis.passwordmanager"
+        applicationId = "de.nursqode.keystan"
         minSdk = 26
         targetSdk = libs.versions.compileSdk.get().toInt()
 

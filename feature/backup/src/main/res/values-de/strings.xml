@@ -55,12 +55,12 @@
     <string name="encryption_method_passphrase_description">Wähle eine Passphrase. Damit lässt sich das Backup auf jedem Gerät wiederherstellen.</string>
     <string name="encryption_method_ark">Dieses Gerät &amp; Konto</string>
     <string name="encryption_method_ark_description">Nutzt den Schlüssel dieses Kontos – du musst dir nichts merken. Lässt sich nur in diesem Konto wiederherstellen.</string>
-    <string name="encryption_method_ark_warning">Nur dieses Konto auf diesem Gerät kann das Backup entschlüsseln. Wenn du KeyGo neu installierst, dein Gerät verlierst oder dein Konto zurücksetzt, bleibt die Datei für immer verschlüsselt und alles darin ist verloren. Niemand kann sie wiederherstellen.</string>
+    <string name="encryption_method_ark_warning">Nur dieses Konto auf diesem Gerät kann das Backup entschlüsseln. Wenn du KeyStan neu installierst, dein Gerät verlierst oder dein Konto zurücksetzt, bleibt die Datei für immer verschlüsselt und alles darin ist verloren. Niemand kann sie wiederherstellen.</string>
 
     <string name="csv_preset_browser">Browser-kompatibel</string>
     <string name="csv_preset_browser_description">Spalten: name, url, username, password, note. Lässt sich in Chrome, Edge und andere Browser importieren. Ohne TOTP.</string>
-    <string name="csv_preset_keygo">KeyGo</string>
-    <string name="csv_preset_keygo_description">Alle Spalten inklusive TOTP. Lässt sich ohne Verluste wieder in KeyGo importieren.</string>
+    <string name="csv_preset_KeyStan">KeyStan</string>
+    <string name="csv_preset_KeyStan_description">Alle Spalten inklusive TOTP. Lässt sich ohne Verluste wieder in KeyStan importieren.</string>
 
     <string name="select_file_format_title">Dateiformat wählen</string>
     <string name="select_schedule_title">Backup-Zeitplan</string>
@@ -100,9 +100,9 @@
     <string name="import_try_again">Zurück</string>
     <string name="import_error_file_unreadable">Die ausgewählte Datei konnte nicht gelesen werden.</string>
     <string name="import_error_empty">Die ausgewählte Datei ist leer.</string>
-    <string name="import_error_unsupported">KeyGo kann nur .json- und .csv-Dateien importieren. Bitte wähle eine Datei mit einer dieser Endungen.</string>
+    <string name="import_error_unsupported">KeyStan kann nur .json- und .csv-Dateien importieren. Bitte wähle eine Datei mit einer dieser Endungen.</string>
     <string name="import_error_nothing">In diesem Backup gibt es nichts zu importieren.</string>
-    <string name="import_error_parse">Diese Datei ist kein gültiges KeyGo-Backup.</string>
+    <string name="import_error_parse">Diese Datei ist kein gültiges KeyStan-Backup.</string>
     <string name="import_error_session_locked">Dein Tresor ist gesperrt. Entsperre ihn und versuch es noch einmal.</string>
     <string name="import_error_generic">Beim Import ist etwas schiefgelaufen.</string>
 
@@ -113,7 +113,7 @@
     <string name="schedule_one_time_title">Einmaliges Backup</string>
     <string name="schedule_one_time_description">Einmal an einen Ort deiner Wahl exportieren. Es wird nichts gespeichert oder wiederholt.</string>
     <string name="schedule_recurring_title">Regelmäßiges Backup</string>
-    <string name="schedule_recurring_description">KeyGo erstellt automatisch nach deinem Zeitplan ein neues Backup.</string>
+    <string name="schedule_recurring_description">KeyStan erstellt automatisch nach deinem Zeitplan ein neues Backup.</string>
     <string name="schedule_recurring_requires_encryption">Regelmäßige Backups brauchen ein verschlüsseltes Format. Wähle JSON, um automatische Backups zu planen.</string>
 
     <string name="schedule_repeat_every_label">Wiederholen alle</string>

@@ -4,7 +4,7 @@
     <string name="fill_anyway">Trotzdem ausfüllen</string>
 
     <string name="checking_website_link">App wird überprüft</string>
-    <string name="checking_website_link_description">KeyGo fragt bei &lt;b>%1$s&lt;/b> nach, ob diese App dafür freigegeben ist.</string>
+    <string name="checking_website_link_description">KeyStan fragt bei &lt;b>%1$s&lt;/b> nach, ob diese App dafür freigegeben ist.</string>
 
     <string name="suspicious_activity">Verdächtige Aktivität</string>
     <string name="suspicious_activity_description">Diese App (&lt;b>%1$s&lt;/b>) ist kein bekannter Browser, zeigt aber eine Website an (&lt;b>%2$s&lt;/b>). Wenn du hier automatisch ausfüllst, könnte die App deine Zugangsdaten erhalten. Fahre nur fort, wenn du der App und der Website vertraust.</string>
@@ -22,8 +22,8 @@
 
     <string name="cancel">Abbrechen</string>
 
-    <string name="open_app">KeyGo-Autofill verwenden</string>
+    <string name="open_app">KeyStan-Autofill verwenden</string>
     <string name="sms_code">SMS-Code</string>
     <string name="waiting_for_sms_code">Warte auf SMS-Code</string>
-    <string name="waiting_for_sms_code_description">KeyGo trägt den Code automatisch ein, sobald die SMS ankommt.</string>
+    <string name="waiting_for_sms_code_description">KeyStan trägt den Code automatisch ein, sobald die SMS ankommt.</string>
 </resources>

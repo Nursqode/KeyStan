@@ -2,7 +2,7 @@
 <resources>
     <string name="settings_security">Sicherheit</string>
     <string name="settings_use_biometrics">Biometrie verwenden</string>
-    <string name="settings_use_biometrics_description">KeyGo per Fingerabdruck oder Gesichtserkennung entsperren</string>
+    <string name="settings_use_biometrics_description">KeyStan per Fingerabdruck oder Gesichtserkennung entsperren</string>
     <string name="settings_reset_password">Hauptpasswort ändern</string>
     <string name="settings_reset_password_description">Ändere das Hauptpasswort, das deine Daten schützt</string>
     <string name="settings_autofill">Autofill</string>
@@ -23,7 +23,7 @@
     <string name="settings_backup_last">Letztes Backup: %1$s</string>
     <string name="settings_backup_none">Noch keine Backups</string>
 
-    <string name="settings_about">Über KeyGo</string>
+    <string name="settings_about">Über KeyStan</string>
     <string name="settings_report_issue">Problem melden</string>
     <string name="settings_3rd_party_licenses">Drittanbieter-Lizenzen</string>
     <string name="settings_version">Version</string>

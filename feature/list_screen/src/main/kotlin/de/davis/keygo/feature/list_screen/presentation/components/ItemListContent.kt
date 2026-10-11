@@ -35,7 +35,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,12 +148,43 @@ internal fun ItemListContent(
                     onDeleteSelected = onDeleteSelectedRequest,
                     onPinSelected = onPinSelectedRequest,
                 )
-            else
-                AppBarWithSearch(
-                    state = searchBarState,
-                    inputField = searchInputField,
-                    scrollBehavior = scrollBehavior
-                )
+            else {
+                // The header carries the product name and the installed version, and the search
+                // field sits on that same coloured surface - so the bar has a background of its own
+                // rather than a grey slab behind a rounded field.
+                val context = LocalContext.current
+                val appVersion = remember(context) {
+                    runCatching {
+                        context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                    }.getOrNull().orEmpty()
+                }
+
+                Surface(color = MaterialTheme.colorScheme.primaryContainer) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(ListScreenR.string.app_header_title, appVersion),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+
+                        AppBarWithSearch(
+                            state = searchBarState,
+                            inputField = searchInputField,
+                            scrollBehavior = scrollBehavior,
+                            // Transparent: the surface above already paints the header, and letting
+                            // the app bar paint its own container would cover it with grey again.
+                            colors = SearchBarDefaults.appBarWithSearchColors(
+                                containerColor = Color.Transparent,
+                            ),
+                        )
+                    }
+                }
+            }
 
             val searchResultContent: @Composable ColumnScope.() -> Unit = {
                 val scope = rememberCoroutineScope()

@@ -4,7 +4,7 @@
     <string name="fill_anyway">Fill anyway</string>
 
     <string name="checking_website_link">Checking this app</string>
-    <string name="checking_website_link_description">KeyGo is asking &lt;b>%1$s&lt;/b> whether this app is allowed to use it.</string>
+    <string name="checking_website_link_description">KeyStan is asking &lt;b>%1$s&lt;/b> whether this app is allowed to use it.</string>
 
     <string name="suspicious_activity">Suspicious Activity</string>
     <string name="suspicious_activity_description">This app (&lt;b>%1$s&lt;/b>) isn\'t a recognized browser. It is showing a website (&lt;b>%2$s&lt;/b>). Autofilling here may give your credentials to this app. Only continue if you trust this app and the site.</string>
@@ -22,8 +22,8 @@
 
     <string name="cancel">Cancel</string>
 
-    <string name="open_app">Use KeyGo Autofill</string>
+    <string name="open_app">Use KeyStan Autofill</string>
     <string name="sms_code">SMS Code</string>
     <string name="waiting_for_sms_code">Waiting for SMS code</string>
-    <string name="waiting_for_sms_code_description">KeyGo will fill in the code as soon as your message arrives.</string>
+    <string name="waiting_for_sms_code_description">KeyStan will fill in the code as soon as your message arrives.</string>
 </resources>

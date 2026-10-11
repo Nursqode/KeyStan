@@ -2,7 +2,7 @@
 <resources>
     <string name="scan_qr_code">QR-Code scannen</string>
 
-    <string name="camera_permission_rationale">Um QR-Codes für die TOTP-Einrichtung zu scannen, braucht KeyGo Zugriff auf deine Kamera.</string>
+    <string name="camera_permission_rationale">Um QR-Codes für die TOTP-Einrichtung zu scannen, braucht KeyStan Zugriff auf deine Kamera.</string>
     <string name="grant">Erlauben</string>
     <string name="cancel">Abbrechen</string>
 
