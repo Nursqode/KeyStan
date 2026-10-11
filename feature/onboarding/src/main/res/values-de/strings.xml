@@ -28,8 +28,8 @@
     <string name="autofill_subtitle">Dann schlägt dir KeyStan deine gespeicherten Passwörter vor, sobald du dich irgendwo anmeldest. Du kannst das jederzeit in den Geräteeinstellungen wieder ändern.</string>
     <string name="autofill_open_settings">Systemeinstellungen öffnen</string>
     <string name="autofill_open_settings_support">Öffne die Einstellungen deines Geräts</string>
-    <string name="autofill_choose_KeyStan">KeyStan auswählen</string>
-    <string name="autofill_choose_KeyStan_support">Wähle KeyStan als Autofill-Dienst aus &amp; bestätige</string>
+    <string name="autofill_choose_keygo">KeyStan auswählen</string>
+    <string name="autofill_choose_keygo_support">Wähle KeyStan als Autofill-Dienst aus &amp; bestätige</string>
     <string name="autofill_chrome">Für Chrome aktivieren</string>
     <string name="autofill_chrome_support">Öffne die Chrome-Einstellungen &amp; erlaube Autofill mit einem anderen Dienst</string>
     <string name="autofill_enable_in_chrome">In Chrome aktivieren</string>

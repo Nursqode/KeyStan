@@ -59,8 +59,8 @@
 
     <string name="csv_preset_browser">Browser-kompatibel</string>
     <string name="csv_preset_browser_description">Spalten: name, url, username, password, note. Lässt sich in Chrome, Edge und andere Browser importieren. Ohne TOTP.</string>
-    <string name="csv_preset_KeyStan">KeyStan</string>
-    <string name="csv_preset_KeyStan_description">Alle Spalten inklusive TOTP. Lässt sich ohne Verluste wieder in KeyStan importieren.</string>
+    <string name="csv_preset_keygo">KeyStan</string>
+    <string name="csv_preset_keygo_description">Alle Spalten inklusive TOTP. Lässt sich ohne Verluste wieder in KeyStan importieren.</string>
 
     <string name="select_file_format_title">Dateiformat wählen</string>
     <string name="select_schedule_title">Backup-Zeitplan</string>

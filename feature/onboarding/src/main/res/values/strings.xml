@@ -28,8 +28,8 @@
     <string name="autofill_subtitle">With this feature KeyStan will offer you stored passwords whenever you are in a login screen. You can always change this setting later in your device settings.</string>
     <string name="autofill_open_settings">Open system settings</string>
     <string name="autofill_open_settings_support">Open your device settings</string>
-    <string name="autofill_choose_KeyStan">Choose KeyStan</string>
-    <string name="autofill_choose_KeyStan_support">Select KeyStan as your autofill provider &amp; confirm</string>
+    <string name="autofill_choose_keygo">Choose KeyStan</string>
+    <string name="autofill_choose_keygo_support">Select KeyStan as your autofill provider &amp; confirm</string>
     <string name="autofill_chrome">Apply to Chrome</string>
     <string name="autofill_chrome_support">Open Chrome settings &amp; enable 3rd party autofill providers</string>
     <string name="autofill_enable_in_chrome">Enable in Chrome</string>

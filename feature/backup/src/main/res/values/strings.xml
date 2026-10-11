@@ -59,8 +59,8 @@
 
     <string name="csv_preset_browser">Browser-compatible</string>
     <string name="csv_preset_browser_description">Columns: name, url, username, password, note. Importable by Chrome, Edge and others. No TOTP.</string>
-    <string name="csv_preset_KeyStan">KeyStan</string>
-    <string name="csv_preset_KeyStan_description">Every column including TOTP. Re-imports into KeyStan without loss.</string>
+    <string name="csv_preset_keygo">KeyStan</string>
+    <string name="csv_preset_keygo_description">Every column including TOTP. Re-imports into KeyStan without loss.</string>
 
     <string name="select_file_format_title">Select File Format</string>
     <string name="select_schedule_title">Backup Schedule</string>
