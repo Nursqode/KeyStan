@@ -26,6 +26,24 @@ class StringsTest {
     }
 
     @Test
+    fun followingTheSystemFollowsTheJvmLocale() {
+        val original = java.util.Locale.getDefault()
+        try {
+            java.util.Locale.setDefault(java.util.Locale.forLanguageTag("ru-RU"))
+            assertEquals(RussianStrings, stringsFor(AppLanguage.SYSTEM))
+
+            java.util.Locale.setDefault(java.util.Locale.forLanguageTag("en-GB"))
+            assertEquals(EnglishStrings, stringsFor(AppLanguage.SYSTEM))
+
+            // A language without a catalog falls back to English rather than to an empty window.
+            java.util.Locale.setDefault(java.util.Locale.forLanguageTag("de-DE"))
+            assertEquals(EnglishStrings, stringsFor(AppLanguage.SYSTEM))
+        } finally {
+            java.util.Locale.setDefault(original)
+        }
+    }
+
+    @Test
     fun noStringIsBlank() {
         // Reflection over the interface is what makes this a completeness check rather than a
         // sample: a new string left empty in a translation fails here instead of reaching a screen.
