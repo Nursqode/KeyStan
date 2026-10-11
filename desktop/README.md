@@ -1,3 +1,5 @@
+**English** · [Русский](README.ru.md)
+
 # KeyStan Desktop
 
 A Windows desktop companion for the KeyGo Android password manager: the same Material 3 look, the
@@ -20,8 +22,8 @@ desktop/
 ## Running it
 
 A ready-made build is attached to the
-[`desktop-v1.0.0` release](https://github.com/Nursqode/KeyStan/releases/tag/desktop-v1.0.0):
-unpack `KeyStan-1.0.0-windows-x64.zip` anywhere and run `KeyStan.exe`. It is portable and carries
+[`desktop-v1.1.0` release](https://github.com/Nursqode/KeyStan/releases/tag/desktop-v1.1.0):
+unpack `KeyStan-1.1.0-windows-x64.zip` anywhere and run `KeyStan.exe`. It is portable and carries
 its own Java runtime.
 
 From this directory (`desktop/`), to run it from source:
@@ -106,6 +108,7 @@ before it is saved. Dialogs, not screens, for anything that can be dismissed.
 - Live one-time codes (RFC 6238, SHA-1/256/512, honouring an `otpauth://` URI's digits and period).
 - Password generator with an entropy readout.
 - Search across titles, usernames, notes, tags and websites.
+- **English and Russian interface**, following the system language by default.
 - Import and export as a backup file, either replacing everything (Android's restore semantics) or
   merging into a chosen vault without duplicating entries.
 

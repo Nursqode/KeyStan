@@ -15,4 +15,4 @@ package de.davis.keygo.desktop.app
  * Kept in step with `packageVersion` in `app/build.gradle.kts` by hand: the build file's value is
  * what the packaged executable reports to Windows, and this is what the user reads in the app.
  */
-const val DESKTOP_VERSION = "1.0.0"
+const val DESKTOP_VERSION = "1.1.0"

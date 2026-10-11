@@ -11,6 +11,8 @@ package de.davis.keygo.desktop.app
 
 import de.davis.keygo.desktop.core.backup.model.Card
 import de.davis.keygo.desktop.core.backup.model.Login
+import de.davis.keygo.desktop.core.ui.i18n.EnglishStrings
+import de.davis.keygo.desktop.core.ui.i18n.Strings
 import de.davis.keygo.desktop.core.vault.data.AppSettings
 import de.davis.keygo.desktop.core.vault.domain.Item
 import de.davis.keygo.desktop.core.vault.domain.ItemKind
@@ -52,6 +54,14 @@ data class AppState(
     val detail: Item? = null,
     val darkTheme: Boolean = false,
     val settings: AppSettings = AppSettings(),
+    /**
+     * The text catalog in the chosen language.
+     *
+     * It travels in the state because every screen already receives the state: a language change is
+     * then an ordinary state update that recomposes the window, with no composition locals or
+     * re-created subtrees to keep in step.
+     */
+    val strings: Strings = EnglishStrings,
     val dialog: AppDialog = AppDialog.NONE,
     /** The item the editor dialog is open on, if it is. */
     val editing: ItemDraft? = null,

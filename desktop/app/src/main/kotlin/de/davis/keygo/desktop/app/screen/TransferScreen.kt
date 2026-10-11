@@ -55,6 +55,7 @@ import de.davis.keygo.desktop.core.vault.domain.ImportMode
  */
 @Composable
 fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) {
+    val s = state.strings
     var pathText by remember { mutableStateOf("") }
     var passphrase by remember { mutableStateOf("") }
     var restoreEverything by remember { mutableStateOf(false) }
@@ -68,17 +69,11 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Text(
-            if (isImport) "Import a backup" else "Export a backup",
+            if (isImport) s.importTitle else s.exportTitle,
             style = MaterialTheme.typography.headlineSmall,
         )
         Text(
-            if (isImport) {
-                "A backup file from KeyGo on Android - or from another KeyStan install - opens here " +
-                    "with the passphrase it was sealed with."
-            } else {
-                "The file written here is the same sealed JSON backup the Android app restores from. " +
-                    "Give it its own passphrase rather than the master one if it is going to travel."
-            },
+if (isImport) s.importExplanation else s.exportExplanation,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -89,7 +84,7 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
                     OutlinedTextField(
                         value = pathText,
                         onValueChange = { pathText = it },
-                        label = { Text("Backup file") },
+                        label = { Text(s.backupFile) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                     )
@@ -98,13 +93,13 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
                         onClick = {
                             val chosen = if (isImport) {
                                 FileDialogs.open(
-                                    title = "Choose a backup",
+                                    title = s.chooseBackupDialog,
                                     directory = viewModel.vaultFilePath().parent,
                                     extensions = listOf(".json", ".ksb", ".backup"),
                                 )
                             } else {
                                 FileDialogs.save(
-                                    title = "Save the backup",
+                                    title = s.saveBackupDialog,
                                     suggestedName = "keystan-backup.json",
                                     directory = viewModel.vaultFilePath().parent,
                                     extensions = listOf(".json"),
@@ -115,28 +110,28 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
                     ) {
                         Icon(Icons.Filled.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.size(8.dp))
-                        Text("Choose…")
+                        Text(s.choose)
                     }
                 }
 
                 OutlinedTextField(
                     value = passphrase,
                     onValueChange = { passphrase = it },
-                    label = { Text(if (isImport) "Passphrase of that file" else "Passphrase for the export") },
+                    label = { Text(if (isImport) s.importPassphraseLabel else s.exportPassphraseLabel) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 if (isImport) {
-                    Text("How should it be applied?", style = MaterialTheme.typography.titleSmall)
+                    Text(s.howApplied, style = MaterialTheme.typography.titleSmall)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = !restoreEverything, onClick = { restoreEverything = false })
-                        Text("Merge into a vault in this app")
+                        Text(s.mergeOption)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = restoreEverything, onClick = { restoreEverything = true })
-                        Text("Replace everything in this app")
+                        Text(s.replaceOption)
                     }
                     if (!restoreEverything) {
                         state.vaults.forEach { vault ->
@@ -145,26 +140,25 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
                                     selected = targetVaultIndex == vault.index,
                                     onClick = { targetVaultIndex = vault.index },
                                 )
-                                Text("Into \"${vault.name}\"")
+                                Text(s.intoVault(vault.name))
                             }
                         }
                     } else {
                         Text(
-                            "Restoring replaces the local vault with the file's contents. Anything " +
-                                "saved here since that file was written is gone.",
+s.restoreWarning,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                         )
                     }
                 } else {
-                    Text("What should it contain?", style = MaterialTheme.typography.titleSmall)
+                    Text(s.whatContains, style = MaterialTheme.typography.titleSmall)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = exportEverything, onClick = { exportEverything = true })
-                        Text("Every vault")
+                        Text(s.everyVault)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = !exportEverything, onClick = { exportEverything = false })
-                        Text("Only the selected vault")
+                        Text(s.onlySelectedVault)
                     }
                 }
 
@@ -183,14 +177,13 @@ fun TransferScreen(viewModel: AppViewModel, state: AppState, isImport: Boolean) 
                     },
                     enabled = canRun,
                 ) {
-                    Text(if (isImport) "Import" else "Export")
+                    Text(if (isImport) s.importAction else s.exportAction)
                 }
             }
         }
 
         Text(
-            "The file is sealed with Argon2id and AES-256-GCM-SIV, the format KeyGo v1 uses. " +
-                "Nothing leaves this machine.",
+s.transferFootnote,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

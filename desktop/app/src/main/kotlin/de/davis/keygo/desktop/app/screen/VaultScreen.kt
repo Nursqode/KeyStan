@@ -73,6 +73,7 @@ import de.davis.keygo.desktop.core.ui.component.KeyGoCard
 import de.davis.keygo.desktop.core.ui.component.Pill
 import de.davis.keygo.desktop.core.ui.component.SearchField
 import de.davis.keygo.desktop.core.ui.component.SelectableRow
+import de.davis.keygo.desktop.core.ui.i18n.Strings
 import de.davis.keygo.desktop.core.ui.theme.secretTextStyle
 import de.davis.keygo.desktop.core.vault.domain.Item
 import de.davis.keygo.desktop.core.vault.domain.ItemKind
@@ -96,6 +97,7 @@ fun VaultScreen(viewModel: AppViewModel, state: AppState) {
 
 @Composable
 private fun ItemList(viewModel: AppViewModel, state: AppState, modifier: Modifier = Modifier) {
+    val s = state.strings
     Column(modifier) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp),
@@ -103,13 +105,13 @@ private fun ItemList(viewModel: AppViewModel, state: AppState, modifier: Modifie
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    state.selectedVault?.name ?: "Vault",
+                    state.selectedVault?.name ?: s.vaultFallback,
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    "${state.rows.size} items",
+                    s.itemCount(state.rows.size),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -117,13 +119,13 @@ private fun ItemList(viewModel: AppViewModel, state: AppState, modifier: Modifie
             FilledTonalButton(onClick = { viewModel.startNewItem(ItemKind.LOGIN) }) {
                 Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
-                Text("Login")
+                Text(s.login)
             }
             Spacer(Modifier.size(8.dp))
             OutlinedButton(onClick = { viewModel.startNewItem(ItemKind.CARD) }) {
                 Icon(Icons.Filled.CreditCard, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
-                Text("Card")
+                Text(s.card)
             }
         }
 
@@ -131,24 +133,25 @@ private fun ItemList(viewModel: AppViewModel, state: AppState, modifier: Modifie
             value = state.query,
             onValueChange = viewModel::setQuery,
             modifier = Modifier.padding(horizontal = 20.dp),
-            placeholder = "Search this vault",
+            placeholder = s.searchThisVault,
         )
         Spacer(Modifier.size(12.dp))
 
         if (state.rows.isEmpty()) {
             EmptyState(
                 icon = if (state.query.isEmpty()) Icons.Filled.Key else Icons.Filled.Pin,
-                title = if (state.query.isEmpty()) "Nothing here yet" else "No matches",
+                title = if (state.query.isEmpty()) s.nothingHereYet else s.noMatches,
                 subtitle = if (state.query.isEmpty()) {
-                    "Add a login or a card, or import a backup from your phone."
+                    s.nothingHereHint
                 } else {
-                    "Nothing in this vault matches \"${state.query}\"."
+                    s.noMatchesHint(state.query)
                 },
             )
         } else {
             LazyColumn {
                 items(state.rows, key = { "${it.ref.vaultIndex}-${it.ref.kind}-${it.ref.itemIndex}" }) { row ->
                     ItemListRow(
+                        s = s,
                         row = row,
                         selected = state.selectedItem == row.ref,
                         nowSeconds = state.totpNowSeconds,
@@ -163,6 +166,7 @@ private fun ItemList(viewModel: AppViewModel, state: AppState, modifier: Modifie
 
 @Composable
 private fun ItemListRow(
+    s: Strings,
     row: ItemRow,
     selected: Boolean,
     nowSeconds: Long,
@@ -180,7 +184,7 @@ private fun ItemListRow(
             )
             Column(Modifier.weight(1f)) {
                 Text(
-                    row.title.ifBlank { "Untitled" },
+                    row.title.ifBlank { s.untitled },
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -194,12 +198,12 @@ private fun ItemListRow(
                 )
             }
             row.totpSecret?.let { secret ->
-                TotpCode(secret = secret, nowSeconds = nowSeconds, compact = true)
+                TotpCode(secret = secret, nowSeconds = nowSeconds, compact = true, s = s)
             }
             IconButton(onClick = onTogglePin) {
                 Icon(
                     imageVector = if (row.pinned) Icons.Filled.Star else Icons.Filled.StarBorder,
-                    contentDescription = if (row.pinned) "Unpin" else "Pin",
+                    contentDescription = if (row.pinned) s.unpin else s.pin,
                     tint = if (row.pinned) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -210,10 +214,10 @@ private fun ItemListRow(
 
 /** The live one-time code, with the seconds left before it changes. */
 @Composable
-private fun TotpCode(secret: String, nowSeconds: Long, compact: Boolean) {
+private fun TotpCode(secret: String, nowSeconds: Long, compact: Boolean, s: Strings) {
     val parameters = remember(secret) { Totp.parametersFor(secret) }
     if (parameters == null) {
-        Pill("no code")
+        Pill(s.noCode)
         return
     }
     val code = remember(parameters, nowSeconds) {
@@ -236,7 +240,7 @@ private fun TotpCode(secret: String, nowSeconds: Long, compact: Boolean) {
         Column(horizontalAlignment = Alignment.End) {
             Text(code, style = secretTextStyle, color = MaterialTheme.colorScheme.primary)
             Text(
-                "${remaining}s",
+                s.secondsShort(remaining),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -250,7 +254,7 @@ private fun TotpCode(secret: String, nowSeconds: Long, compact: Boolean) {
                 modifier = Modifier.fillMaxWidth().height(4.dp),
             )
             Text(
-                "Changes in ${remaining}s",
+                s.changesIn(remaining),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -260,12 +264,13 @@ private fun TotpCode(secret: String, nowSeconds: Long, compact: Boolean) {
 
 @Composable
 private fun DetailPane(viewModel: AppViewModel, state: AppState, modifier: Modifier = Modifier) {
+    val s = state.strings
     val copyToClipboard = rememberClipboardCopier()
 
     fun copy(label: String, value: String?) {
         if (value.isNullOrEmpty()) return
         copyToClipboard(value)
-        viewModel.notify("$label copied")
+        viewModel.notify(s.copied(label))
     }
 
     Box(modifier) {
@@ -273,8 +278,8 @@ private fun DetailPane(viewModel: AppViewModel, state: AppState, modifier: Modif
         if (item == null) {
             EmptyState(
                 icon = Icons.Filled.Key,
-                title = "Nothing selected",
-                subtitle = "Pick an item on the left, or add a new one.",
+                title = s.nothingSelected,
+                subtitle = s.pickAnItem,
                 modifier = Modifier.align(Alignment.Center),
             )
             return@Box
@@ -295,7 +300,7 @@ private fun DetailPane(viewModel: AppViewModel, state: AppState, modifier: Modif
                 Spacer(Modifier.size(16.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        item.title.ifBlank { "Untitled" },
+                        item.title.ifBlank { s.untitled },
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     if (item.tags.isNotEmpty()) {
@@ -315,7 +320,7 @@ private fun DetailPane(viewModel: AppViewModel, state: AppState, modifier: Modif
                 KeyGoCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
-                            "Notes",
+                            s.notes,
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -330,6 +335,7 @@ private fun DetailPane(viewModel: AppViewModel, state: AppState, modifier: Modif
 
 @Composable
 private fun ItemActions(viewModel: AppViewModel, state: AppState, item: Item) {
+    val s = state.strings
     var moveMenu by remember { mutableStateOf(false) }
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -338,21 +344,21 @@ private fun ItemActions(viewModel: AppViewModel, state: AppState, item: Item) {
         IconButton(onClick = viewModel::toggleRevealSecrets) {
             Icon(
                 imageVector = if (state.revealSecrets) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                contentDescription = if (state.revealSecrets) "Hide secrets" else "Show secrets",
+                contentDescription = if (state.revealSecrets) s.hideSecrets else s.showSecrets,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         OutlinedButton(onClick = { state.selectedItem?.let(viewModel::startEditItem) }) {
             Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.size(6.dp))
-            Text("Edit")
+            Text(s.edit)
         }
         Box {
-            OutlinedButton(onClick = { moveMenu = true }) { Text("Move") }
+            OutlinedButton(onClick = { moveMenu = true }) { Text(s.move) }
             DropdownMenu(expanded = moveMenu, onDismissRequest = { moveMenu = false }) {
                 state.vaults.filter { it.index != state.selectedVaultIndex }.forEach { vault ->
                     DropdownMenuItem(
-                        text = { Text("Move to ${vault.name}") },
+                        text = { Text(s.moveTo(vault.name)) },
                         onClick = {
                             moveMenu = false
                             state.selectedItem?.let { viewModel.moveItem(it, vault.index) }
@@ -364,7 +370,7 @@ private fun ItemActions(viewModel: AppViewModel, state: AppState, item: Item) {
         IconButton(onClick = { viewModel.openDialog(AppDialog.CONFIRM_DELETE_ITEM) }) {
             Icon(
                 Icons.Filled.Delete,
-                contentDescription = "Delete",
+                contentDescription = s.delete,
                 tint = MaterialTheme.colorScheme.error,
             )
         }
@@ -373,39 +379,40 @@ private fun ItemActions(viewModel: AppViewModel, state: AppState, item: Item) {
 
 @Composable
 private fun LoginDetails(state: AppState, item: Item.OfLogin, onCopy: (String, String?) -> Unit) {
+    val s = state.strings
     val login = item.login
     val reveal = state.revealSecrets
 
     KeyGoCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp)) {
             DetailRow(
-                label = "Username",
+                label = s.username,
                 value = login.username,
-                onCopy = { onCopy("Username", login.username) },
+                onCopy = { onCopy(s.username, login.username) },
             )
             HorizontalDivider()
             DetailRow(
-                label = "Password",
+                label = s.password,
                 value = login.password,
                 isSecret = true,
                 revealed = reveal,
-                onCopy = { onCopy("Password", login.password) },
+                onCopy = { onCopy(s.password, login.password) },
             )
             login.totpSecret?.let { secret ->
                 HorizontalDivider()
                 Spacer(Modifier.size(12.dp))
                 Text(
-                    "One-time code",
+                    s.oneTimeCode,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.size(6.dp))
-                TotpCode(secret = secret, nowSeconds = state.totpNowSeconds, compact = false)
+                TotpCode(secret = secret, nowSeconds = state.totpNowSeconds, compact = false, s = s)
             }
             if (login.websites.isNotEmpty()) {
                 HorizontalDivider()
                 login.websites.forEach { website ->
-                    DetailRow(label = "Website", value = website, onCopy = { onCopy("Website", website) })
+                    DetailRow(label = s.website, value = website, onCopy = { onCopy(s.website, website) })
                 }
             }
         }
@@ -414,33 +421,34 @@ private fun LoginDetails(state: AppState, item: Item.OfLogin, onCopy: (String, S
 
 @Composable
 private fun CardDetails(state: AppState, item: Item.OfCard, onCopy: (String, String?) -> Unit) {
+    val s = state.strings
     val card = item.card
     val reveal = state.revealSecrets
 
     KeyGoCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp)) {
             DetailRow(
-                label = "Cardholder",
+                label = s.cardholder,
                 value = card.cardholder,
-                onCopy = { onCopy("Cardholder", card.cardholder) },
+                onCopy = { onCopy(s.cardholder, card.cardholder) },
             )
             HorizontalDivider()
             DetailRow(
-                label = "Number",
+                label = s.number,
                 value = ItemFormatting.formatCardNumber(card.number),
                 isSecret = false,
                 revealed = reveal,
-                onCopy = { onCopy("Card number", card.number.replace(" ", "")) },
+                onCopy = { onCopy(s.cardNumber, card.number.replace(" ", "")) },
             )
             HorizontalDivider()
-            DetailRow(label = "Expires", value = ItemFormatting.expiry(card))
+            DetailRow(label = s.expires, value = ItemFormatting.expiry(card))
             HorizontalDivider()
             DetailRow(
-                label = "CVV",
+                label = s.cvv,
                 value = card.cvv,
                 isSecret = true,
                 revealed = reveal,
-                onCopy = { onCopy("CVV", card.cvv) },
+                onCopy = { onCopy(s.cvv, card.cvv) },
             )
         }
     }

@@ -44,6 +44,7 @@ import de.davis.keygo.desktop.app.AppState
 import de.davis.keygo.desktop.app.AppViewModel
 import de.davis.keygo.desktop.app.platform.rememberClipboardCopier
 import de.davis.keygo.desktop.core.ui.component.KeyGoCard
+import de.davis.keygo.desktop.core.ui.i18n.Strings
 import de.davis.keygo.desktop.core.ui.theme.secretTextStyle
 import de.davis.keygo.desktop.core.vault.domain.PasswordGenerator
 import de.davis.keygo.desktop.core.vault.domain.PasswordOptions
@@ -53,6 +54,7 @@ import kotlin.math.roundToInt
 /** Generates a password to paste into a signup form, without leaving the app. */
 @Composable
 fun GeneratorScreen(viewModel: AppViewModel, state: AppState) {
+    val s = state.strings
     var options by remember { mutableStateOf(PasswordOptions()) }
     var password by remember { mutableStateOf(PasswordGenerator.generate(options)) }
     val copyToClipboard = rememberClipboardCopier()
@@ -67,26 +69,26 @@ fun GeneratorScreen(viewModel: AppViewModel, state: AppState) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Text("Password generator", style = MaterialTheme.typography.headlineSmall)
+        Text(s.passwordGenerator, style = MaterialTheme.typography.headlineSmall)
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        password.ifEmpty { "Select at least one character set" },
+                        password.ifEmpty { s.selectCharacterSet },
                         style = MaterialTheme.typography.headlineSmall.merge(secretTextStyle),
                         modifier = Modifier.weight(1f),
                     )
                     IconButton(onClick = {
                         if (password.isNotEmpty()) {
                             copyToClipboard(password)
-                            viewModel.notify("Password copied")
+                            viewModel.notify(s.passwordCopied)
                         }
                     }) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = "Copy the password")
+                        Icon(Icons.Filled.ContentCopy, contentDescription = s.copyPassword)
                     }
                     IconButton(onClick = { password = PasswordGenerator.generate(options) }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "Generate another")
+                        Icon(Icons.Filled.Refresh, contentDescription = s.generateAnother)
                     }
                 }
 
@@ -96,7 +98,7 @@ fun GeneratorScreen(viewModel: AppViewModel, state: AppState) {
                     modifier = Modifier.fillMaxWidth().height(6.dp),
                 )
                 Text(
-                    "${bits.roundToInt()} bits of entropy · ${strengthLabel(bits)}",
+                    s.entropyBits(bits.roundToInt(), strengthLabel(bits, s)),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -105,25 +107,25 @@ fun GeneratorScreen(viewModel: AppViewModel, state: AppState) {
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Length: ${options.length}", style = MaterialTheme.typography.titleMedium)
+                Text(s.lengthLabel(options.length), style = MaterialTheme.typography.titleMedium)
                 Slider(
                     value = options.length.toFloat(),
                     onValueChange = { options = options.copy(length = it.roundToInt()) },
                     valueRange = 8f..64f,
                 )
 
-                OptionSwitch("Lowercase letters", options.lowercase) {
+                OptionSwitch(s.lowercaseLetters, options.lowercase) {
                     options = options.copy(lowercase = it)
                 }
-                OptionSwitch("Uppercase letters", options.uppercase) {
+                OptionSwitch(s.uppercaseLetters, options.uppercase) {
                     options = options.copy(uppercase = it)
                 }
-                OptionSwitch("Digits", options.digits) { options = options.copy(digits = it) }
-                OptionSwitch("Symbols", options.symbols) { options = options.copy(symbols = it) }
-                OptionSwitch("Avoid look-alike characters (0, O, 1, l, I)", options.avoidAmbiguous) {
+                OptionSwitch(s.digits, options.digits) { options = options.copy(digits = it) }
+                OptionSwitch(s.symbols, options.symbols) { options = options.copy(symbols = it) }
+                OptionSwitch(s.avoidAmbiguous, options.avoidAmbiguous) {
                     options = options.copy(avoidAmbiguous = it)
                 }
-                OptionSwitch("Avoid characters some sites reject", options.avoidProblematic) {
+                OptionSwitch(s.avoidProblematic, options.avoidProblematic) {
                     options = options.copy(avoidProblematic = it)
                 }
 
@@ -132,15 +134,14 @@ fun GeneratorScreen(viewModel: AppViewModel, state: AppState) {
                     options = strong
                     password = PasswordGenerator.generate(strong)
                 }) {
-                    Text("Reset to a strong default")
+                    Text(s.resetStrongDefault)
                 }
             }
         }
 
         Spacer(Modifier.size(8.dp))
         Text(
-            "Passwords are generated here with the JDK's secure random source. Nothing about them " +
-                "is stored unless you save one into an item.",
+s.generatorFootnote,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -156,9 +157,9 @@ private fun OptionSwitch(label: String, checked: Boolean, onChange: (Boolean) ->
     }
 }
 
-private fun strengthLabel(bits: Double): String = when {
-    bits < 40 -> "weak"
-    bits < 60 -> "fair"
-    bits < 80 -> "strong"
-    else -> "excellent"
+private fun strengthLabel(bits: Double, s: Strings): String = when {
+    bits < 40 -> s.strengthWeak
+    bits < 60 -> s.strengthFair
+    bits < 80 -> s.strengthStrong
+    else -> s.strengthExcellent
 }

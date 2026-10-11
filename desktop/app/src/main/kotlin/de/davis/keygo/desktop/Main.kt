@@ -111,7 +111,7 @@ private fun Root(viewModel: AppViewModel, state: AppState) {
                                 }
                             }
                             state.status?.let { message ->
-                                StatusBanner(message) { viewModel.clearStatus() }
+                                StatusBanner(message, state.strings.dismiss) { viewModel.clearStatus() }
                             }
                         }
                     }
@@ -120,7 +120,7 @@ private fun Root(viewModel: AppViewModel, state: AppState) {
             }
 
             if (state.busy) {
-                BusyOverlay(state.busyLabel ?: "Working")
+                BusyOverlay(state.busyLabel ?: state.strings.busyWorking)
             }
         }
     }
@@ -128,7 +128,7 @@ private fun Root(viewModel: AppViewModel, state: AppState) {
 
 /** A transient message at the bottom of the window - "Copied", "Item deleted", and the like. */
 @Composable
-private fun StatusBanner(message: String, onDismiss: () -> Unit) {
+private fun StatusBanner(message: String, dismissLabel: String, onDismiss: () -> Unit) {
     LaunchedEffect(message) {
         delay(2_600)
         onDismiss()

@@ -37,20 +37,22 @@ import de.davis.keygo.desktop.app.AppViewModel
 import de.davis.keygo.desktop.app.DESKTOP_VERSION
 import de.davis.keygo.desktop.app.platform.FileDialogs
 import de.davis.keygo.desktop.core.ui.component.KeyGoCard
+import de.davis.keygo.desktop.core.vault.data.AppLanguage
 import de.davis.keygo.desktop.core.vault.data.ThemeMode
 
 /** Preferences, the vault file's location, and what the file actually is. */
 @Composable
 fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
+    val s = state.strings
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(28.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineSmall)
+        Text(s.settings, style = MaterialTheme.typography.headlineSmall)
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Appearance", style = MaterialTheme.typography.titleMedium)
+                Text(s.appearance, style = MaterialTheme.typography.titleMedium)
                 ThemeMode.entries.forEach { mode ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
@@ -59,9 +61,30 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
                         )
                         Text(
                             when (mode) {
-                                ThemeMode.SYSTEM -> "Follow the system"
-                                ThemeMode.LIGHT -> "Light"
-                                ThemeMode.DARK -> "Dark"
+                                ThemeMode.SYSTEM -> s.followSystem
+                                ThemeMode.LIGHT -> s.light
+                                ThemeMode.DARK -> s.dark
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
+        KeyGoCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(s.language, style = MaterialTheme.typography.titleMedium)
+                AppLanguage.entries.forEach { language ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = state.settings.language == language,
+                            onClick = { viewModel.updateSettings { it.copy(language = language) } },
+                        )
+                        Text(
+                            when (language) {
+                                AppLanguage.SYSTEM -> s.languageSystem
+                                AppLanguage.ENGLISH -> s.languageEnglish
+                                AppLanguage.RUSSIAN -> s.languageRussian
                             },
                         )
                     }
@@ -71,10 +94,10 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Security", style = MaterialTheme.typography.titleMedium)
+                Text(s.security, style = MaterialTheme.typography.titleMedium)
 
                 Text(
-                    "Lock after ${state.settings.autoLockMinutes} minutes without input",
+                    s.lockAfterMinutes(state.settings.autoLockMinutes),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Slider(
@@ -85,8 +108,8 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
                     valueRange = 0f..60f,
                 )
                 Text(
-                    if (state.settings.autoLockMinutes == 0) "Automatic locking is off"
-                    else "Idle time before the vault is sealed again",
+                    if (state.settings.autoLockMinutes == 0) s.autoLockOff
+                    else s.autoLockHint,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -99,19 +122,19 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
                         },
                     )
                     Spacer(Modifier.size(12.dp))
-                    Text("Hide passwords and card numbers until asked")
+                    Text(s.concealSecrets)
                 }
 
                 HorizontalDivider()
                 Button(onClick = { viewModel.openDialog(AppDialog.CHANGE_PASSPHRASE) }) {
-                    Text("Change the master passphrase")
+                    Text(s.changePassphraseTitle)
                 }
             }
         }
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Vault file", style = MaterialTheme.typography.titleMedium)
+                Text(s.vaultFile, style = MaterialTheme.typography.titleMedium)
                 Text(
                     state.vaultFileName,
                     style = MaterialTheme.typography.bodyLarge,
@@ -128,12 +151,11 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
                                 ?.let(viewModel::useVaultFile)
                         },
                     ) {
-                        Text("Open another file")
+                        Text(s.openAnotherFile)
                     }
                 }
                 Text(
-                    "Switching files locks the current vault first; the file on disk is left exactly " +
-                        "as it was.",
+                    s.switchingFilesHint,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -142,23 +164,19 @@ fun SettingsScreen(viewModel: AppViewModel, state: AppState) {
 
         KeyGoCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("About", style = MaterialTheme.typography.titleMedium)
+                Text(s.about, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "KeyStan Desktop $DESKTOP_VERSION · vault format v1",
+                    s.aboutVersion(DESKTOP_VERSION),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Text("Author: Nursqode", style = MaterialTheme.typography.bodyMedium)
+                Text(s.aboutAuthor, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    "KeyStan is a fork of KeyGo by Davis Alessandru (OffRange), and the two share " +
-                        "their vault format. Licensed under the GNU GPL v3.0 or later.",
+s.aboutCredits,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    "The vault file is the same sealed JSON backup the KeyGo Android app writes: " +
-                        "Argon2id (64 MiB, 3 passes, 4 lanes) derives a key that AES-256-GCM-SIV uses " +
-                        "to seal the payload. A file exported here restores on the phone, and a " +
-                        "backup exported there imports here.",
+s.aboutFormat,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

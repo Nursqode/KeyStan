@@ -20,6 +20,15 @@ import kotlinx.serialization.json.Json
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /**
+ * Which language the window speaks.
+ *
+ * The app ships its own catalogs rather than relying on the OS alone, so `SYSTEM` is the default and
+ * the two explicit choices exist for people whose Windows is in a language they do not read.
+ */
+@Serializable
+enum class AppLanguage { SYSTEM, ENGLISH, RUSSIAN }
+
+/**
  * Everything the app remembers between runs, other than the vault itself.
  *
  * Only preferences live here - never a passphrase, and never anything derived from one. The vault
@@ -29,6 +38,7 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 data class AppSettings(
     val vaultFileName: String = "vault.ksb",
     val theme: ThemeMode = ThemeMode.SYSTEM,
+    val language: AppLanguage = AppLanguage.SYSTEM,
     /** Minutes of inactivity before the vault locks; 0 disables automatic locking. */
     val autoLockMinutes: Int = 5,
     val lastImportDirectory: String? = null,

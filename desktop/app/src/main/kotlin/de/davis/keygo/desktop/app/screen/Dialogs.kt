@@ -56,6 +56,7 @@ import de.davis.keygo.desktop.app.VaultIcons
 import de.davis.keygo.desktop.core.backup.model.Card
 import de.davis.keygo.desktop.core.backup.model.Login
 import de.davis.keygo.desktop.core.ui.component.IconBadge
+import de.davis.keygo.desktop.core.ui.i18n.Strings
 import de.davis.keygo.desktop.core.vault.domain.ItemKind
 import de.davis.keygo.desktop.core.vault.domain.PasswordGenerator
 import de.davis.keygo.desktop.core.vault.domain.PasswordOptions
@@ -69,11 +70,13 @@ import de.davis.keygo.desktop.core.vault.domain.PassphrasePolicy
  */
 @Composable
 fun Dialogs(viewModel: AppViewModel, state: AppState) {
+    val s = state.strings
     when (state.dialog) {
         AppDialog.NONE -> Unit
 
         AppDialog.NEW_VAULT -> VaultDialog(
-            title = "New vault",
+            s = s,
+            title = s.newVault,
             initialName = "",
             initialIcon = VaultIcons.Default,
             onDismiss = viewModel::closeDialog,
@@ -86,7 +89,8 @@ fun Dialogs(viewModel: AppViewModel, state: AppState) {
         AppDialog.RENAME_VAULT -> {
             val vault = state.selectedVault
             VaultDialog(
-                title = "Rename vault",
+                s = s,
+                title = s.renameVault,
                 initialName = vault?.name.orEmpty(),
                 initialIcon = vault?.icon ?: VaultIcons.Default,
                 onDismiss = viewModel::closeDialog,
@@ -99,6 +103,7 @@ fun Dialogs(viewModel: AppViewModel, state: AppState) {
 
         AppDialog.EDIT_ITEM -> state.editing?.let { draft ->
             ItemEditorDialog(
+                s = s,
                 draft = draft,
                 onDismiss = viewModel::closeDialog,
                 onSaveLogin = { login ->
@@ -113,9 +118,10 @@ fun Dialogs(viewModel: AppViewModel, state: AppState) {
         }
 
         AppDialog.CONFIRM_DELETE_ITEM -> ConfirmDialog(
-            title = "Delete this item?",
-            text = "The item is removed from the vault and the file is rewritten. This cannot be undone.",
-            confirmLabel = "Delete",
+            title = s.deleteItemTitle,
+            text = s.deleteItemText,
+            confirmLabel = s.delete,
+            cancelLabel = s.cancel,
             onDismiss = viewModel::closeDialog,
             onConfirm = {
                 state.selectedItem?.let(viewModel::deleteItem)
@@ -124,9 +130,10 @@ fun Dialogs(viewModel: AppViewModel, state: AppState) {
         )
 
         AppDialog.CONFIRM_DELETE_VAULT -> ConfirmDialog(
-            title = "Delete \"${state.selectedVault?.name.orEmpty()}\"?",
-            text = "Every login and card in this vault is deleted with it.",
-            confirmLabel = "Delete vault",
+            title = s.deleteVaultTitle(state.selectedVault?.name.orEmpty()),
+            text = s.deleteVaultText,
+            confirmLabel = s.deleteVault,
+            cancelLabel = s.cancel,
             onDismiss = viewModel::closeDialog,
             onConfirm = {
                 viewModel.deleteVault(state.selectedVaultIndex)
@@ -135,6 +142,7 @@ fun Dialogs(viewModel: AppViewModel, state: AppState) {
         )
 
         AppDialog.CHANGE_PASSPHRASE -> ChangePassphraseDialog(
+            s = s,
             onDismiss = viewModel::closeDialog,
             onConfirm = { newPassphrase ->
                 viewModel.changePassphrase(newPassphrase)
@@ -149,6 +157,7 @@ private fun ConfirmDialog(
     title: String,
     text: String,
     confirmLabel: String,
+    cancelLabel: String,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
@@ -157,12 +166,13 @@ private fun ConfirmDialog(
         title = { Text(title) },
         text = { Text(text) },
         confirmButton = { Button(onClick = onConfirm) { Text(confirmLabel) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(cancelLabel) } },
     )
 }
 
 @Composable
 private fun VaultDialog(
+    s: Strings,
     title: String,
     initialName: String,
     initialIcon: String,
@@ -180,11 +190,11 @@ private fun VaultDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text(s.name) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Text("Icon", style = MaterialTheme.typography.labelMedium)
+                Text(s.icon, style = MaterialTheme.typography.labelMedium)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(8),
                     modifier = Modifier.heightIn(max = 240.dp),
@@ -209,33 +219,29 @@ private fun VaultDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(name.trim().ifBlank { "Vault" }, icon) },
-            ) { Text("Save") }
+                onClick = { onConfirm(name.trim().ifBlank { s.vaultFallback }, icon) },
+            ) { Text(s.save) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(s.cancel) } },
     )
 }
 
 @Composable
-private fun ChangePassphraseDialog(onDismiss: () -> Unit, onConfirm: (CharArray) -> Unit) {
+private fun ChangePassphraseDialog(s: Strings, onDismiss: () -> Unit, onConfirm: (CharArray) -> Unit) {
     var passphrase by remember { mutableStateOf("") }
     var confirmation by remember { mutableStateOf("") }
     val valid = passphrase.length >= PassphrasePolicy.MIN_LENGTH && passphrase == confirmation
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Change the master passphrase") },
+        title = { Text(s.changePassphraseTitle) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    "The vault file is re-sealed with the new passphrase. There is no recovery if " +
-                        "it is lost.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Text(s.changePassphraseText, style = MaterialTheme.typography.bodyMedium)
                 OutlinedTextField(
                     value = passphrase,
                     onValueChange = { passphrase = it },
-                    label = { Text("New passphrase") },
+                    label = { Text(s.newPassphrase) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
@@ -243,7 +249,7 @@ private fun ChangePassphraseDialog(onDismiss: () -> Unit, onConfirm: (CharArray)
                 OutlinedTextField(
                     value = confirmation,
                     onValueChange = { confirmation = it },
-                    label = { Text("Repeat passphrase") },
+                    label = { Text(s.repeatPassphrase) },
                     singleLine = true,
                     isError = confirmation.isNotEmpty() && confirmation != passphrase,
                     visualTransformation = PasswordVisualTransformation(),
@@ -251,7 +257,7 @@ private fun ChangePassphraseDialog(onDismiss: () -> Unit, onConfirm: (CharArray)
                 )
                 if (passphrase.isNotEmpty() && passphrase.length < PassphrasePolicy.MIN_LENGTH) {
                     Text(
-                        "Use at least ${PassphrasePolicy.MIN_LENGTH} characters",
+                        s.atLeastCharacters(PassphrasePolicy.MIN_LENGTH),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -259,9 +265,9 @@ private fun ChangePassphraseDialog(onDismiss: () -> Unit, onConfirm: (CharArray)
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(passphrase.toCharArray()) }, enabled = valid) { Text("Change") }
+            Button(onClick = { onConfirm(passphrase.toCharArray()) }, enabled = valid) { Text(s.change) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(s.cancel) } },
     )
 }
 
@@ -274,6 +280,7 @@ private fun ChangePassphraseDialog(onDismiss: () -> Unit, onConfirm: (CharArray)
  */
 @Composable
 private fun ItemEditorDialog(
+    s: Strings,
     draft: ItemDraft,
     onDismiss: () -> Unit,
     onSaveLogin: (Login) -> Unit,
@@ -300,7 +307,7 @@ private fun ItemEditorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (draft.ref == null) "New item" else "Edit item") },
+        title = { Text(if (draft.ref == null) s.newItem else s.editItem) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth().heightIn(max = 560.dp).verticalScroll(rememberScrollState()),
@@ -309,14 +316,14 @@ private fun ItemEditorDialog(
                 if (draft.ref == null) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         if (kind == ItemKind.LOGIN) {
-                            Button(onClick = { kind = ItemKind.LOGIN }) { Text("Login") }
+                            Button(onClick = { kind = ItemKind.LOGIN }) { Text(s.login) }
                         } else {
-                            OutlinedButton(onClick = { kind = ItemKind.LOGIN }) { Text("Login") }
+                            OutlinedButton(onClick = { kind = ItemKind.LOGIN }) { Text(s.login) }
                         }
                         if (kind == ItemKind.CARD) {
-                            Button(onClick = { kind = ItemKind.CARD }) { Text("Card") }
+                            Button(onClick = { kind = ItemKind.CARD }) { Text(s.card) }
                         } else {
-                            OutlinedButton(onClick = { kind = ItemKind.CARD }) { Text("Card") }
+                            OutlinedButton(onClick = { kind = ItemKind.CARD }) { Text(s.card) }
                         }
                     }
                 }
@@ -324,7 +331,7 @@ private fun ItemEditorDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title") },
+                    label = { Text(s.titleField) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -333,7 +340,7 @@ private fun ItemEditorDialog(
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
-                        label = { Text("Username") },
+                        label = { Text(s.username) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -341,27 +348,27 @@ private fun ItemEditorDialog(
                         OutlinedTextField(
                             value = password,
                             onValueChange = { password = it },
-                            label = { Text("Password") },
+                            label = { Text(s.password) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
                         IconButton(
                             onClick = { password = PasswordGenerator.generate(PasswordOptions(length = 20)) },
                         ) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Generate a password")
+                            Icon(Icons.Filled.Refresh, contentDescription = s.generatePassword)
                         }
                     }
                     OutlinedTextField(
                         value = websites,
                         onValueChange = { websites = it },
-                        label = { Text("Websites (one per line)") },
+                        label = { Text(s.websitesLabel) },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 2,
                     )
                     OutlinedTextField(
                         value = totpSecret,
                         onValueChange = { totpSecret = it },
-                        label = { Text("TOTP secret or otpauth:// URI") },
+                        label = { Text(s.totpSecretLabel) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -369,14 +376,14 @@ private fun ItemEditorDialog(
                     OutlinedTextField(
                         value = cardholder,
                         onValueChange = { cardholder = it },
-                        label = { Text("Cardholder") },
+                        label = { Text(s.cardholder) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     OutlinedTextField(
                         value = number,
                         onValueChange = { number = it },
-                        label = { Text("Card number") },
+                        label = { Text(s.cardNumber) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
@@ -385,21 +392,21 @@ private fun ItemEditorDialog(
                         OutlinedTextField(
                             value = expiryMonth,
                             onValueChange = { expiryMonth = it.filter(Char::isDigit).take(2) },
-                            label = { Text("Month") },
+                            label = { Text(s.month) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
                         OutlinedTextField(
                             value = expiryYear,
                             onValueChange = { expiryYear = it.filter(Char::isDigit).take(4) },
-                            label = { Text("Year") },
+                            label = { Text(s.year) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
                         OutlinedTextField(
                             value = cvv,
                             onValueChange = { cvv = it.filter(Char::isDigit).take(4) },
-                            label = { Text("CVV") },
+                            label = { Text(s.cvv) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
@@ -409,21 +416,21 @@ private fun ItemEditorDialog(
                 OutlinedTextField(
                     value = tags,
                     onValueChange = { tags = it },
-                    label = { Text("Tags (comma separated)") },
+                    label = { Text(s.tagsLabel) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Notes") },
+                    label = { Text(s.notes) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Switch(checked = pinned, onCheckedChange = { pinned = it })
                     Spacer(Modifier.width(12.dp))
-                    Text("Pinned")
+                    Text(s.pinned)
                 }
             }
         },
@@ -460,8 +467,8 @@ private fun ItemEditorDialog(
                         )
                     }
                 },
-            ) { Text("Save") }
+            ) { Text(s.save) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(s.cancel) } },
     )
 }

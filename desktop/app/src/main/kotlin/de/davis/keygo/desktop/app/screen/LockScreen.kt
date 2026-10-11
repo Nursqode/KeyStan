@@ -52,6 +52,7 @@ import de.davis.keygo.desktop.core.vault.domain.PassphrasePolicy
  */
 @Composable
 fun LockScreen(viewModel: AppViewModel, state: AppState) {
+    val s = state.strings
     var passphrase by remember { mutableStateOf("") }
     var confirmation by remember { mutableStateOf("") }
     val creating = !state.hasVaultFile
@@ -74,16 +75,12 @@ fun LockScreen(viewModel: AppViewModel, state: AppState) {
             ) {
                 AppMark(size = 64)
                 Text(
-                    text = if (creating) "Create your vault" else "Unlock KeyStan",
+                    text = if (creating) s.createYourVault else s.unlockTitle,
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Text(
-                    text = if (creating) {
-                        "Your vault is sealed with this passphrase. It is never stored, and there is " +
-                            "no recovery - write it down."
-                    } else {
-                        "Enter the master passphrase for ${state.vaultFileName}."
-                    },
+                    text = if (creating) s.createVaultExplanation
+                    else s.unlockExplanation(state.vaultFileName),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -91,7 +88,7 @@ fun LockScreen(viewModel: AppViewModel, state: AppState) {
                 OutlinedTextField(
                     value = passphrase,
                     onValueChange = { passphrase = it },
-                    label = { Text("Master passphrase") },
+                    label = { Text(s.masterPassphrase) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
@@ -105,19 +102,19 @@ fun LockScreen(viewModel: AppViewModel, state: AppState) {
                     OutlinedTextField(
                         value = confirmation,
                         onValueChange = { confirmation = it },
-                        label = { Text("Repeat passphrase") },
+                        label = { Text(s.repeatPassphrase) },
                         singleLine = true,
                         isError = confirmation.isNotEmpty() && confirmation != passphrase,
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { submit() }),
                         supportingText = if (confirmation.isNotEmpty() && confirmation != passphrase)
-                            ({ Text("The two passphrases do not match") }) else null,
+                            ({ Text(s.passphrasesDoNotMatch) }) else null,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     if (passphrase.isNotEmpty() && !longEnough) {
                         Text(
-                            "Use at least ${PassphrasePolicy.MIN_LENGTH} characters",
+                            s.atLeastCharacters(PassphrasePolicy.MIN_LENGTH),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error,
                         )
@@ -137,17 +134,17 @@ fun LockScreen(viewModel: AppViewModel, state: AppState) {
                     enabled = canSubmit,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(if (creating) "Create vault" else "Unlock")
+                    Text(if (creating) s.createVault else s.unlock)
                 }
 
                 TextButton(
                     onClick = {
-                        FileDialogs.open("Open a vault file", viewModel.vaultFilePath().parent)
+                        FileDialogs.open(s.openVaultFileDialog, viewModel.vaultFilePath().parent)
                             ?.let(viewModel::useVaultFile)
                     },
                 ) {
                     Icon(Icons.Filled.FolderOpen, contentDescription = null)
-                    Text("  Open a different vault file")
+                    Text(s.openAnotherVaultFile)
                 }
 
                 Text(

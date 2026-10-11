@@ -19,4 +19,11 @@ dependencies {
     @Suppress("DEPRECATION")
     api(compose.materialIconsExtended)
     api(libs.kotlinx.coroutines.swing)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
+}
+
+tasks.test {
+    useJUnit()
 }

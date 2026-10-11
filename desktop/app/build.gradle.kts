@@ -43,7 +43,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "KeyStan"
-            packageVersion = "1.0.0"
+            packageVersion = "1.1.0"
         }
     }
 }

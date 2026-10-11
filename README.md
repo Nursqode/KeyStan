@@ -1,3 +1,5 @@
+**English** · [Русский](README.ru.md)
+
 # KeyGo - Your Secure Digital Vault
 
 [![GitHub release](https://img.shields.io/github/release/OffRange/KeyGo?include_prereleases=&sort=semver)](https://github.com/OffRange/KeyGo/releases/)
@@ -49,6 +51,7 @@ server, no account, nothing leaves the machine.
 * **Import and export**: restore everything from a backup, or merge one into a chosen vault without
   duplicating entries.
 * **Search** across titles, usernames, notes, tags and websites.
+* **English and Russian interface**, following the system language by default.
 
 Build the packaged application (a portable folder with `KeyStan.exe`, ~160 MB, no JVM required on the
 target machine):

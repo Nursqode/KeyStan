@@ -22,6 +22,9 @@ import de.davis.keygo.desktop.core.backup.model.Backup
 import de.davis.keygo.desktop.core.backup.model.Card
 import de.davis.keygo.desktop.core.backup.model.Login
 import de.davis.keygo.desktop.core.backup.model.Vault
+import de.davis.keygo.desktop.core.ui.i18n.Strings
+import de.davis.keygo.desktop.core.ui.i18n.stringsFor
+import de.davis.keygo.desktop.core.ui.i18n.textFor
 import de.davis.keygo.desktop.core.vault.data.AppPaths
 import de.davis.keygo.desktop.core.vault.data.AppSettings
 import de.davis.keygo.desktop.core.vault.data.AppSettingsStore
@@ -54,6 +57,9 @@ class AppViewModel(
     private val files = VaultFiles()
 
     private var settings: AppSettings = settingsStore.load()
+
+    /** The catalog for [settings]' language, used for every message this class produces. */
+    private var strings: Strings = stringsFor(settings.language)
     private var session: VaultSession =
         VaultSession(files, SealedBackupFile(paths.vaultFile(settings.vaultFileName)))
 
@@ -63,6 +69,7 @@ class AppViewModel(
             vaultFileName = settings.vaultFileName,
             settings = settings,
             darkTheme = settings.theme.isDark(),
+            strings = strings,
             totpNowSeconds = System.currentTimeMillis() / 1000,
         ),
     )
@@ -77,7 +84,7 @@ class AppViewModel(
     }
 
     private fun create(passphrase: CharArray) {
-        _state.update { it.copy(busy = true, busyLabel = "Creating your vault", lockError = null) }
+        _state.update { it.copy(busy = true, busyLabel = strings.busyCreating, lockError = null) }
         scope.launch {
             val result = withContext(Dispatchers.IO) { session.createNew(passphrase) }
             when (result) {
@@ -100,7 +107,7 @@ class AppViewModel(
     }
 
     private fun unlock(passphrase: CharArray) {
-        _state.update { it.copy(busy = true, busyLabel = "Unlocking", lockError = null) }
+        _state.update { it.copy(busy = true, busyLabel = strings.busyUnlocking, lockError = null) }
         scope.launch {
             val result = withContext(Dispatchers.IO) { session.unlock(passphrase) }
             when (result) {
@@ -136,7 +143,7 @@ class AppViewModel(
                 dialog = AppDialog.NONE,
                 revealSecrets = false,
                 lockError = null,
-                status = "Vault locked",
+                status = strings.statusVaultLocked,
             )
         }
     }
@@ -166,8 +173,11 @@ class AppViewModel(
 
     fun updateSettings(transform: (AppSettings) -> AppSettings) {
         settings = transform(settings)
+        strings = stringsFor(settings.language)
         settingsStore.save(settings)
-        _state.update { it.copy(settings = settings, darkTheme = settings.theme.isDark()) }
+        _state.update {
+            it.copy(settings = settings, darkTheme = settings.theme.isDark(), strings = strings)
+        }
     }
 
     // endregion
@@ -245,7 +255,7 @@ class AppViewModel(
 
     fun deleteItem(ref: ItemRef) {
         val removed = edit { backup -> BackupEditor.removeItem(backup, ref) }
-        if (removed) _state.update { it.copy(selectedItem = null, detail = null, status = "Item deleted") }
+        if (removed) _state.update { it.copy(selectedItem = null, detail = null, status = strings.statusItemDeleted) }
     }
 
     fun togglePinned(ref: ItemRef) = edit { backup ->
@@ -259,7 +269,7 @@ class AppViewModel(
 
     fun moveItem(ref: ItemRef, targetVaultIndex: Int) {
         edit { backup -> BackupEditor.moveItem(backup, ref, targetVaultIndex) }
-        _state.update { it.copy(selectedItem = null, detail = null, status = "Item moved") }
+        _state.update { it.copy(selectedItem = null, detail = null, status = strings.statusItemMoved) }
     }
 
     // endregion
@@ -276,7 +286,7 @@ class AppViewModel(
 
     fun deleteVault(index: Int) {
         if ((session.backup?.vaults?.size ?: 0) <= 1) {
-            notify("A vault must remain")
+            notify(strings.statusVaultMustRemain)
             return
         }
         edit { backup -> BackupEditor.removeVault(backup, index) }
@@ -288,11 +298,11 @@ class AppViewModel(
     // region transfer and passphrase
 
     fun exportTo(path: Path, exportPassphrase: CharArray, scope: ExportScope) {
-        runBusy("Exporting") {
+        runBusy(strings.busyExporting) {
             val result = session.exportTo(path, exportPassphrase, scope)
             when (result) {
                 is VaultResult.Ok -> _state.update {
-                    it.copy(status = "Exported to ${path.fileName}", screen = Screen.VAULT)
+                    it.copy(status = strings.statusExported(path.fileName.toString()), screen = Screen.VAULT)
                 }
 
                 is VaultResult.Err -> _state.update { it.copy(status = result.error.message()) }
@@ -301,12 +311,12 @@ class AppViewModel(
     }
 
     fun importFrom(path: Path, importPassphrase: CharArray, mode: ImportMode) {
-        runBusy("Importing") {
+        runBusy(strings.busyImporting) {
             val result = session.importFrom(path, importPassphrase, mode)
             when (result) {
                 is VaultResult.Ok -> _state.update { current ->
                     current.copy(
-                        status = "Imported ${result.value.logins} logins and ${result.value.cards} cards",
+                        status = strings.statusImported(result.value.logins, result.value.cards),
                         screen = Screen.VAULT,
                         selectedItem = null,
                         detail = null,
@@ -319,9 +329,9 @@ class AppViewModel(
     }
 
     fun changePassphrase(newPassphrase: CharArray) {
-        runBusy("Re-sealing the vault") {
+        runBusy(strings.busyResealing) {
             when (val result = session.changePassphrase(newPassphrase)) {
-                is VaultResult.Ok -> _state.update { it.copy(status = "Master passphrase changed") }
+                is VaultResult.Ok -> _state.update { it.copy(status = strings.statusPassphraseChanged) }
                 is VaultResult.Err -> _state.update { it.copy(status = result.error.message()) }
             }
         }
@@ -425,15 +435,7 @@ class AppViewModel(
         }
     }
 
-    private fun VaultError.message(): String = when (this) {
-        VaultError.NoVaultFile -> "No vault file at that path"
-        VaultError.WrongPassphrase -> "That passphrase does not open this vault"
-        VaultError.WeakPassphrase -> "Use at least ${de.davis.keygo.desktop.core.vault.domain.PassphrasePolicy.MIN_LENGTH} characters"
-        VaultError.NeedsAccountKey -> "This file is sealed with the Android account key; export it from the phone with a passphrase instead"
-        VaultError.PassphraseMismatch -> "The two passphrases do not match"
-        is VaultError.Unreadable -> "Cannot read this file: $reason"
-        is VaultError.Io -> "File error: $reason"
-    }
+    private fun VaultError.message(): String = strings.textFor(this)
 
     private fun de.davis.keygo.desktop.core.vault.data.ThemeMode.isDark(): Boolean = when (this) {
         de.davis.keygo.desktop.core.vault.data.ThemeMode.DARK -> true

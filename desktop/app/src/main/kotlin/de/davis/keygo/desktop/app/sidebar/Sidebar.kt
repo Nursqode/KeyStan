@@ -57,6 +57,7 @@ import de.davis.keygo.desktop.NavIcons
 import de.davis.keygo.desktop.app.Screen
 import de.davis.keygo.desktop.app.VaultIcons
 import de.davis.keygo.desktop.core.ui.component.IconBadge
+import de.davis.keygo.desktop.core.ui.i18n.Strings
 import de.davis.keygo.desktop.core.ui.component.SelectableRow
 import de.davis.keygo.desktop.core.vault.domain.VaultSummary
 
@@ -68,6 +69,7 @@ import de.davis.keygo.desktop.core.vault.domain.VaultSummary
  */
 @Composable
 fun Sidebar(viewModel: AppViewModel, state: AppState) {
+    val s = state.strings
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier.fillMaxHeight().width(300.dp),
@@ -82,7 +84,7 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
                 Column {
                     Text("KeyStan", style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "Password manager · by Nursqode",
+                        s.tagline,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -92,7 +94,7 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
             Spacer(Modifier.size(20.dp))
 
             Text(
-                "VAULTS",
+                s.vaultsSection,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp),
@@ -102,6 +104,7 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
             LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
                 items(state.vaults, key = { it.index }) { vault ->
                     VaultRow(
+                        s = s,
                         vault = vault,
                         selected = state.screen == Screen.VAULT && state.selectedVaultIndex == vault.index,
                         onSelect = {
@@ -126,22 +129,22 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
-                Text("New vault")
+                Text(s.newVault)
             }
 
             Spacer(Modifier.weight(1f))
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
-            NavItem(NavIcons.Generator, "Generator", state.screen == Screen.GENERATOR) {
+            NavItem(NavIcons.Generator, s.generator, state.screen == Screen.GENERATOR) {
                 viewModel.showScreen(Screen.GENERATOR)
             }
-            NavItem(NavIcons.Import, "Import a backup", state.screen == Screen.IMPORT) {
+            NavItem(NavIcons.Import, s.importBackup, state.screen == Screen.IMPORT) {
                 viewModel.showScreen(Screen.IMPORT)
             }
-            NavItem(NavIcons.Export, "Export a backup", state.screen == Screen.EXPORT) {
+            NavItem(NavIcons.Export, s.exportBackup, state.screen == Screen.EXPORT) {
                 viewModel.showScreen(Screen.EXPORT)
             }
-            NavItem(NavIcons.Settings, "Settings", state.screen == Screen.SETTINGS) {
+            NavItem(NavIcons.Settings, s.settings, state.screen == Screen.SETTINGS) {
                 viewModel.showScreen(Screen.SETTINGS)
             }
 
@@ -158,7 +161,7 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
                 Button(onClick = viewModel::lock, modifier = Modifier.fillMaxWidth()) {
                     Icon(NavIcons.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.size(8.dp))
-                    Text("Lock")
+                    Text(s.lock)
                 }
             }
         }
@@ -167,6 +170,7 @@ fun Sidebar(viewModel: AppViewModel, state: AppState) {
 
 @Composable
 private fun VaultRow(
+    s: Strings,
     vault: VaultSummary,
     selected: Boolean,
     onSelect: () -> Unit,
@@ -190,7 +194,7 @@ private fun VaultRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    "${vault.loginCount} logins · ${vault.cardCount} cards",
+                    s.vaultCounts(vault.loginCount, vault.cardCount),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -199,13 +203,13 @@ private fun VaultRow(
                 IconButton(onClick = { menuOpen = true }) {
                     Icon(
                         Icons.Filled.MoreVert,
-                        contentDescription = "Vault actions",
+                        contentDescription = s.vaultActions,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                     DropdownMenuItem(
-                        text = { Text("Rename") },
+                        text = { Text(s.rename) },
                         leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                         onClick = {
                             menuOpen = false
@@ -213,7 +217,7 @@ private fun VaultRow(
                         },
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete") },
+                        text = { Text(s.delete) },
                         leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
                         onClick = {
                             menuOpen = false
