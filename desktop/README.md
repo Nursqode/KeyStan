@@ -19,7 +19,12 @@ desktop/
 
 ## Running it
 
-From this directory (`desktop/`):
+A ready-made build is attached to the
+[`desktop-v1.0.0` release](https://github.com/Nursqode/KeyStan/releases/tag/desktop-v1.0.0):
+unpack `KeyStan-1.0.0-windows-x64.zip` anywhere and run `KeyStan.exe`. It is portable and carries
+its own Java runtime.
+
+From this directory (`desktop/`), to run it from source:
 
 ```bat
 ..\gradlew.bat -p . :app:run
