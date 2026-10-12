@@ -198,6 +198,12 @@ graphify-out/
 .smoke/
 .tmp-src/
 
+### Android build (.android-gradle-run.ps1)
+# Same reasoning as the desktop one, for the Android half: a sandboxed session cannot write to
+# %USERPROFILE%\.gradle or .android, so this script points both at the repository.
+.gradle-android/
+.android-home/
+
 # The packaged desktop application, copied out of build/ so that `gradlew clean` cannot erase the
 # ready-to-run folder (about 160 MB: it carries its own Java runtime and the Skia renderer).
 desktop/dist/
