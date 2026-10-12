@@ -211,3 +211,6 @@ desktop/dist/
 .build-msi.ps1
 .release-notes*.md
 .commit-msg*.txt
+.cargo-home/
+.local-build.log
+.build-local-apk.ps1

@@ -1,5 +1,6 @@
 package de.davis.keygo.feature.list_screen.presentation.components
 
+import de.davis.keygo.core.item.domain.model.lite.LiteItem
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animate
