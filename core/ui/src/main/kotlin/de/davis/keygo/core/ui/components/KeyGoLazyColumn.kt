@@ -66,6 +66,8 @@ sealed interface HeaderContent {
 data class KeyGoColumnItem<ID : Any>(
     val header: HeaderContent,
     val title: String,
+    /** Second line of the row: the login for a login item, the type for anything else. */
+    val subtitle: String? = null,
     val id: ID,
     val itemType: VaultItemType,
     val status: ItemStatus? = null,
@@ -184,16 +186,11 @@ fun <ID : Any> KeyGoColumn(
                             Spacer(modifier = Modifier.headerSize())
                         }
                     },
-                    // The type label ("Login", "Card") is what the icon already says, and it cost a
-                    // second line under every row. Only a status is worth the height now, so the
-                    // common row is a single line and a warning still gets its line.
-                    supportingContent = item.status?.let { status ->
-                        {
-                            SupportingText(
-                                typeLabel = item.itemType.presentation.first,
-                                status = status,
-                            )
-                        }
+                    supportingContent = {
+                        SupportingText(
+                            label = item.subtitle ?: item.itemType.presentation.first,
+                            status = item.status,
+                        )
                     },
                     selected = id in selectedItemIds,
                 ) {
@@ -292,16 +289,16 @@ private fun Modifier.expressiveAnimateItem(): Modifier = with(scope) {
 }
 
 @Composable
-private fun SupportingText(typeLabel: String, status: ItemStatus?) {
+private fun SupportingText(label: String, status: ItemStatus?) {
     if (status == null) {
-        Text(text = typeLabel)
+        Text(text = label)
         return
     }
 
     val statusColor = if (status.emphasized) MaterialTheme.colorScheme.error else Color.Unspecified
     Text(
         text = buildAnnotatedString {
-            append(typeLabel)
+            append(label)
             append(" \u2022 ")
             withStyle(SpanStyle(color = statusColor)) { append(status.text) }
         },

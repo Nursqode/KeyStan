@@ -8,4 +8,5 @@ internal data class LightweightItem(
     val name: String,
     val itemType: VaultItemType,
     val pinned: Boolean,
+    val username: String?,
 )

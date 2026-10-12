@@ -26,6 +26,7 @@ internal fun LightweightItem.toDomain() = LiteItem.Concrete(
     name = name,
     itemType = itemType,
     pinned = pinned,
+    username = username,
 )
 
 internal fun LightweightItemSearchResult.toDomain() = LiteItemSearchResult(

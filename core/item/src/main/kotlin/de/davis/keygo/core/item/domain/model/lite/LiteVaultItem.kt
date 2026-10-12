@@ -18,7 +18,8 @@ interface LiteItem {
         override val id: ItemId,
         override val name: String,
         override val itemType: VaultItemType,
-        override val pinned: Boolean
+        override val pinned: Boolean,
+        val username: String? = null,
     ) : LiteItem
 }
 

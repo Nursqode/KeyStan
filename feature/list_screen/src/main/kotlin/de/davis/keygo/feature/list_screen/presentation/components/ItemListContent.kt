@@ -272,6 +272,7 @@ internal fun ItemListContent(
                                     else -> HeaderContent.Letter(it.name.first().uppercaseChar())
                                 },
                                 title = it.name,
+                                subtitle = (it as? LiteItem.Concrete)?.username,
                                 id = it.id,
                                 itemType = it.itemType,
                                 status = uiState.cardExpiryStatuses[it.id]?.let { status ->
