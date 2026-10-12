@@ -107,10 +107,14 @@ jobs:
             echo "::error::The build produced no APK"
             exit 1
           fi
-          printf 'artifact: %s\n' "${apks[@]}"
+          # Gradle names the file after its flavour and build type, which tells whoever downloads
+          # it nothing. Publish it under the product name and version instead.
+          asset="KeyStan-${TAG#v}.apk"
+          cp "${apks[0]}" "$asset"
+          printf 'artifact: %s\n' "$asset"
 
           # Re-running for an existing tag replaces the asset instead of failing.
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --title "KeyStan $TAG" --generate-notes
           fi
-          gh release upload "$TAG" "${apks[@]}" --clobber
+          gh release upload "$TAG" "$asset" --clobber
