@@ -141,45 +141,22 @@ private fun MatchedFields(fields: List<SearchMatchField>) {
     val labels = fields.map { it.label }
     val reason = stringResource(R.string.search_match_reason, labels.joinToString())
 
-    FlowRow(
-        modifier = Modifier
-            .padding(top = 4.dp)
-            .semantics(mergeDescendants = true) { contentDescription = reason },
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        fields.forEachIndexed { index, field ->
-            MatchedFieldChip(icon = field.icon, label = labels[index])
-        }
-    }
-}
-
-@Composable
-private fun MatchedFieldChip(icon: ImageVector, label: String) {
-    Surface(
-        shape = MaterialTheme.shapes.extraSmall,
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(12.dp),
-            )
-            Text(text = label, style = MaterialTheme.typography.labelSmall)
-        }
-    }
+    // One line instead of a row of chips: chips wrapped onto extra lines as soon as a second field
+    // matched, and each of them set the row's height. The result list is for scanning.
+    Text(
+        text = labels.joinToString(),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.semantics(mergeDescendants = true) { contentDescription = reason },
+    )
 }
 
 @Composable
 private fun ItemTypeBadge(icon: ImageVector, contentDescription: String) {
     Surface(
-        modifier = Modifier.size(40.dp),
+        modifier = Modifier.size(28.dp),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -188,7 +165,7 @@ private fun ItemTypeBadge(icon: ImageVector, contentDescription: String) {
             Icon(
                 imageVector = icon,
                 contentDescription = contentDescription,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(16.dp),
             )
         }
     }
