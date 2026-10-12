@@ -18,6 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import de.davis.keygo.core.item.data.local.entity.KeyInformation as EntityKeyInformation
 
@@ -93,6 +94,7 @@ class ItemMapperTest {
             name = "Test item",
             itemType = VaultItemType.Login,
             pinned = true,
+            username = "someone@example.com",
         )
 
         val lite = lightweight.toDomain()
@@ -101,6 +103,20 @@ class ItemMapperTest {
         assertEquals("Test item", lite.name)
         assertEquals(VaultItemType.Login, lite.itemType)
         assertTrue(lite.pinned)
+        assertEquals("someone@example.com", lite.username)
+    }
+
+    @Test
+    fun `LightweightItem toDomain maps a missing username to null`() {
+        val lightweight = LightweightItem(
+            id = newItemId(),
+            name = "Test item",
+            itemType = VaultItemType.Login,
+            pinned = false,
+            username = null,
+        )
+
+        assertNull(lightweight.toDomain().username)
     }
 
     // LightweightItemSearchResult.toDomain() -> LiteItemSearchResult
