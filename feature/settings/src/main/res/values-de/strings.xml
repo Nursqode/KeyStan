@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_theme_palette">Farbpalette</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_system">Wie im System</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_theme_dynamic_color">Hintergrundbildfarben</string>
+    <string name="settings_theme_dynamic_color_description">Nutze die Farben, die das System aus deinem Hintergrundbild ableitet</string>
+    <string name="settings_palette_system">Systemfarben</string>
+    <string name="settings_palette_red">Rot</string>
+
     <string name="settings_security">Sicherheit</string>
     <string name="settings_use_biometrics">Biometrie verwenden</string>
     <string name="settings_use_biometrics_description">KeyStan per Fingerabdruck oder Gesichtserkennung entsperren</string>

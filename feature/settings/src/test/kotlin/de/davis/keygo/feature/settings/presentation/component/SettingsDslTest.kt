@@ -158,6 +158,41 @@ class SettingsDslTest {
         assertNull(picker.supporting)
     }
 
+    @Test
+    fun `picker options carry the sample they map to and none without a sample lambda`() {
+        val sampled = SectionScope().apply {
+            picker(
+                title = 30,
+                selected = "a",
+                options = listOf("a", "b"),
+                label = { UIText.RawString(it) },
+                onSelect = {},
+                colors = colors,
+                sample = { if (it == "a") Color.Red else Color.Blue },
+            )
+        }.build().single()
+
+        val unsampled = SectionScope().apply {
+            picker(
+                title = 30,
+                selected = "a",
+                options = listOf("a", "b"),
+                label = { UIText.RawString(it) },
+                onSelect = {},
+                colors = colors,
+            )
+        }.build().single()
+
+        assertEquals(
+            listOf(Color.Red, Color.Blue),
+            assertIs<SettingsEntry.Picker>(sampled).options.map { it.sample },
+        )
+        assertEquals(
+            listOf(null, null),
+            assertIs<SettingsEntry.Picker>(unsampled).options.map { it.sample },
+        )
+    }
+
     private fun testIcon(): ImageVector = ImageVector.Builder(
         name = "test",
         defaultWidth = 24.dp,

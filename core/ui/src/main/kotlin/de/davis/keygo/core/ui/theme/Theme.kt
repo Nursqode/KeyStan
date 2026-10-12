@@ -19,29 +19,27 @@ fun isContrastAvailable(): Boolean {
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 }
 
+/**
+ * The device's contrast preference, or 0 where the platform has no such setting. Material's contrast
+ * level is the same 0..1 scale, so a generated palette can be drawn at the contrast the user asked
+ * for rather than snapped onto one of three tables.
+ */
+internal fun Context.contrastLevel(): Float = if (isContrastAvailable()) {
+    (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).contrast
+} else 0f
+
 @Composable
 fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
-    val context = LocalContext.current
-    var colorScheme = if (isDark) darkScheme else lightScheme
+    val contrastLevel = LocalContext.current.contrastLevel()
 
-    if (isContrastAvailable()) {
-        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        val contrastLevel = uiModeManager.contrast
+    return when {
+        contrastLevel <= 0.33f -> if (isDark) darkScheme else lightScheme
 
-        colorScheme = when (contrastLevel) {
-            in 0.0f..0.33f -> if (isDark)
-                darkScheme else lightScheme
+        contrastLevel <= 0.66f ->
+            if (isDark) mediumContrastDarkColorScheme else mediumContrastLightColorScheme
 
-            in 0.34f..0.66f -> if (isDark)
-                mediumContrastDarkColorScheme else mediumContrastLightColorScheme
-
-            in 0.67f..1.0f -> if (isDark)
-                highContrastDarkColorScheme else highContrastLightColorScheme
-
-            else -> colorScheme
-        }
-        return colorScheme
-    } else return colorScheme
+        else -> if (isDark) highContrastDarkColorScheme else highContrastLightColorScheme
+    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -49,20 +47,35 @@ fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
 fun KeyGoTheme(
     isDarkMode: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
+    palette: KeyPalette = KeyPalette.System,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (isDarkMode) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        else -> selectSchemeForContrast(isDarkMode)
-    }
-
     MaterialExpressiveTheme(
-        colorScheme = colorScheme,
+        colorScheme = themeColorScheme(isDarkMode, dynamicColor, palette),
         typography = KeyGoTypography,
         content = content
     )
+}
+
+/**
+ * The scheme a set of theme choices resolves to. Public so that a picker can show what a palette
+ * looks like without drawing a second theme around each sample: the sample and the interface then
+ * cannot disagree, because there is one decision here and not two.
+ */
+@Composable
+fun themeColorScheme(
+    isDarkMode: Boolean,
+    dynamicColor: Boolean,
+    palette: KeyPalette,
+): ColorScheme {
+    val context = LocalContext.current
+
+    // A palette the user picked beats the wallpaper: otherwise Material You repaints every colour
+    // they did not ask for.
+    return palette.scheme(isDarkMode, context.contrastLevel().toDouble()) ?: when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+            if (isDarkMode) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+
+        else -> selectSchemeForContrast(isDarkMode)
+    }
 }

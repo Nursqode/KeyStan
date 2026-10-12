@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.keygo.android.compose)
+    alias(libs.plugins.keygo.android.protobuf)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -21,6 +22,8 @@ dependencies {
     implementation(projects.core.item)
     implementation(projects.feature.autofill)
     implementation(projects.feature.backup)
+    implementation(projects.core.util)
+    implementation(libs.androidx.datastore)
 
     testImplementation(testFixtures(projects.core.biometrics))
     testImplementation(testFixtures(projects.core.identity))

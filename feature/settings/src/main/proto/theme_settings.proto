@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package de.davis.keygo.feature.settings.data.local.model;
+option java_multiple_files = true;
+
+message ProtoThemeSettings {
+  ProtoKeyPalette palette = 1;
+  ProtoThemeMode mode = 2;
+
+  // Explicit presence on purpose: an absent field has to keep meaning "let the device pick the
+  // colours", which is what the app did before there was a setting. A plain bool would read as
+  // false on the first launch after this field appeared and silently turn Material You off.
+  optional bool dynamicColor = 3;
+}
+
+enum ProtoKeyPalette {
+  PALETTE_SYSTEM = 0;
+  PALETTE_RED = 1;
+}
+
+enum ProtoThemeMode {
+  THEME_SYSTEM = 0;
+  THEME_LIGHT = 1;
+  THEME_DARK = 2;
+}

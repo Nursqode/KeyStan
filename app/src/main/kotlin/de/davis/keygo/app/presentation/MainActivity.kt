@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -33,6 +34,7 @@ import de.davis.keygo.core.presentation.model.RouteDestination
 import de.davis.keygo.core.ui.composition.LocalIsInSinglePaneMode
 import de.davis.keygo.core.ui.navigation.KeyGoNavDisplay
 import de.davis.keygo.core.ui.theme.KeyGoTheme
+import de.davis.keygo.core.ui.theme.isDark
 import de.davis.keygo.core.util.domain.snackbar.SnackbarManager
 import de.davis.keygo.core.util.presentation.snackbar.LocalSnackbarManager
 import de.davis.keygo.core.util.presentation.snackbar.SnackbarHandler
@@ -63,11 +65,16 @@ class MainActivity : FragmentActivity() {
         setContent {
             // Null until the account has been looked up, which the splash screen waits out.
             val hasAccess = viewModel.isReturningUser.collectAsState().value ?: return@setContent
+            val theme = viewModel.themeSettings.collectAsState().value
             val isSessionActive by viewModel.isSessionActive.collectAsState()
             val needsAttentionCount by viewModel.needsAttentionCount.collectAsState()
             val requestedTopLevelRoute by viewModel.requestedTopLevelRoute.collectAsState()
 
-            KeyGoTheme {
+            KeyGoTheme(
+                isDarkMode = theme.mode.isDark(isSystemInDarkTheme()),
+                dynamicColor = theme.dynamicColor,
+                palette = theme.palette,
+            ) {
                 val snackbarManager = koinInject<SnackbarManager>()
                 CompositionLocalProvider(
                     LocalSnackbarManager provides snackbarManager,

@@ -1,6 +1,7 @@
 package de.davis.keygo.feature.settings.presentation
 
 import android.text.format.DateUtils
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -8,12 +9,15 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockReset
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,9 +25,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.davis.keygo.core.security.domain.model.LockInfo
+import de.davis.keygo.core.ui.theme.KeyPalette
+import de.davis.keygo.core.ui.theme.ThemeMode
+import de.davis.keygo.core.ui.theme.isDark
+import de.davis.keygo.core.ui.theme.themeColorScheme
 import de.davis.keygo.core.util.presentation.UIText
 import de.davis.keygo.core.util.presentation.UIText.Companion.PluralsString
 import de.davis.keygo.core.util.presentation.UIText.Companion.ResourceString
@@ -51,12 +60,51 @@ internal fun SettingsContent(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
+        // Resolved once: every swatch has to agree with the interface, so the whole section reads a
+        // single light/dark answer instead of each sample guessing its own.
+        val isDarkMode = state.themeMode.isDark(isSystemInDarkTheme())
+        val samples = paletteSamples(isDark = isDarkMode, dynamicColor = state.dynamicColor)
+
         SettingsList(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 8.dp),
             contentPadding = innerPadding,
         ) {
+            section(title = R.string.settings_appearance) {
+                picker(
+                    title = R.string.settings_theme_palette,
+                    icon = Icons.Default.Palette,
+                    colors = defaultColors,
+                    selected = state.palette,
+                    options = KeyPalette.entries,
+                    label = { it.label },
+                    sample = { palette -> samples.getValue(palette) },
+                    onSelect = { onEvent(SettingsUiEvent.SetThemePalette(it)) },
+                )
+
+                picker(
+                    title = R.string.settings_theme,
+                    icon = Icons.Default.DarkMode,
+                    colors = defaultColors,
+                    selected = state.themeMode,
+                    options = ThemeMode.entries,
+                    label = { it.label },
+                    onSelect = { onEvent(SettingsUiEvent.SetThemeMode(it)) },
+                )
+
+                // Only the system palette can follow the wallpaper; under any other palette the
+                // switch would change nothing, so it stays out of the way instead of lying.
+                if (state.palette == KeyPalette.System) toggle(
+                    title = R.string.settings_theme_dynamic_color,
+                    icon = Icons.Default.Wallpaper,
+                    supporting = ResourceString(R.string.settings_theme_dynamic_color_description),
+                    colors = defaultColors,
+                    checked = state.dynamicColor,
+                    onCheckedChange = { onEvent(SettingsUiEvent.SetDynamicColor(it)) },
+                )
+            }
+
             section(title = R.string.settings_security) {
                 action(
                     title = R.string.settings_reset_password,
@@ -176,6 +224,35 @@ private val LockInfo.Timeout.label: UIText
             duration.inWholeMinutes.toInt(),
             duration.inWholeMinutes,
         )
+    }
+
+private val KeyPalette.label: UIText
+    get() = when (this) {
+        KeyPalette.System -> ResourceString(R.string.settings_palette_system)
+        KeyPalette.Red -> ResourceString(R.string.settings_palette_red)
+    }
+
+private val ThemeMode.label: UIText
+    get() = when (this) {
+        ThemeMode.System -> ResourceString(R.string.settings_theme_system)
+        ThemeMode.Light -> ResourceString(R.string.settings_theme_light)
+        ThemeMode.Dark -> ResourceString(R.string.settings_theme_dark)
+    }
+
+/**
+ * The swatch for every palette.
+ *
+ * A palette with a seed shows the seed itself, so a chip that says red is red in light and in dark.
+ * Material deliberately draws an accent in a light tone on a dark background, and a chip showing
+ * that derived tone would read as pink next to its own name. [KeyPalette.System] has no colour of
+ * its own, so it shows what it resolves to — the wallpaper or the inherited violet — which is what
+ * that choice actually delivers.
+ */
+@Composable
+private fun paletteSamples(isDark: Boolean, dynamicColor: Boolean): Map<KeyPalette, Color> =
+    KeyPalette.entries.associateWith { palette ->
+        palette.seed
+            ?: themeColorScheme(isDarkMode = isDark, dynamicColor = dynamicColor, palette = palette).primary
     }
 
 @Preview

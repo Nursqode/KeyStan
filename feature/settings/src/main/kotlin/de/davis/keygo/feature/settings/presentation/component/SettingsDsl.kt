@@ -2,6 +2,7 @@ package de.davis.keygo.feature.settings.presentation.component
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.ListItemColors
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import de.davis.keygo.core.util.presentation.UIText
 
@@ -87,6 +88,7 @@ internal class SectionScope {
         onSelect: (T) -> Unit,
         colors: ListItemColors,
         icon: ImageVector? = null,
+        sample: ((T) -> Color)? = null,
     ) {
         entries += SettingsEntry.Picker(
             title = title,
@@ -94,7 +96,11 @@ internal class SectionScope {
             colors = colors,
             selectedIndex = options.indexOf(selected),
             options = options.map { option ->
-                SettingsEntry.Picker.Option(label(option)) { onSelect(option) }
+                SettingsEntry.Picker.Option(
+                    label = label(option),
+                    onSelect = { onSelect(option) },
+                    sample = sample?.invoke(option),
+                )
             },
         )
     }

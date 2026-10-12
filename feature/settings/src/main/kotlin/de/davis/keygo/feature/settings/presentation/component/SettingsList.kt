@@ -1,6 +1,8 @@
 package de.davis.keygo.feature.settings.presentation.component
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -184,6 +187,11 @@ private fun SettingsEntryRow(
         is SettingsEntry.Picker -> {
             var pickerOpen by rememberSaveable { mutableStateOf(false) }
 
+            val selectedSample = entry.options.getOrNull(entry.selectedIndex)?.sample
+            val sampleContent: (@Composable () -> Unit)? = selectedSample?.let { sample ->
+                { SampleCircle(sample) }
+            }
+
             SegmentedListItem(
                 onClick = { pickerOpen = true },
                 shapes = shapes,
@@ -191,6 +199,7 @@ private fun SettingsEntryRow(
                 leadingContent = leadingContent,
                 supportingContent = supportingContent,
                 verticalAlignment = verticalAlignment,
+                trailingContent = sampleContent,
                 modifier = modifier,
                 content = headlineContent,
             )
@@ -245,6 +254,12 @@ private fun PickerDialog(
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(start = 16.dp),
                         )
+                        option.sample?.let { sample ->
+                            SampleCircle(
+                                color = sample,
+                                modifier = Modifier.padding(start = 12.dp),
+                            )
+                        }
                     }
                 }
             }
@@ -254,6 +269,24 @@ private fun PickerDialog(
                 Text(text = stringResource(R.string.cancel))
             }
         },
+    )
+}
+
+/**
+ * One palette swatch. Outlined because a sample is a scheme's `primary`, which on some wallpapers
+ * sits close enough to the surface behind it that an unfilled circle would vanish.
+ */
+@Composable
+private fun SampleCircle(
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(22.dp)
+            .clip(CircleShape)
+            .background(color)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
     )
 }
 

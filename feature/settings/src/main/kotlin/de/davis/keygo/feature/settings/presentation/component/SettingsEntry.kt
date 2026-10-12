@@ -2,6 +2,7 @@ package de.davis.keygo.feature.settings.presentation.component
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.ListItemColors
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import de.davis.keygo.core.util.presentation.UIText
 
@@ -53,7 +54,16 @@ internal sealed interface SettingsEntry {
 
         override val supporting: UIText? = options.getOrNull(selectedIndex)?.label
 
-        data class Option(val label: UIText, val onSelect: () -> Unit)
+        /**
+         * The colour this option would paint the interface in, or `null` for an option that has no
+         * colour to show. It is the scheme a taken choice resolves to, so the swatch is a promise
+         * the interface then keeps rather than a decoration standing in for one.
+         */
+        data class Option(
+            val label: UIText,
+            val onSelect: () -> Unit,
+            val sample: Color? = null,
+        )
     }
 }
 

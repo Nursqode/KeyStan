@@ -20,6 +20,10 @@ import de.davis.keygo.feature.autofill.domain.usecase.AutofillActivationStatusUs
 import de.davis.keygo.feature.backup.domain.usecase.ObserveLastBackupUseCase
 import de.davis.keygo.feature.settings.R
 import de.davis.keygo.feature.settings.domain.repository.AppVersionRepository
+import de.davis.keygo.feature.settings.domain.usecase.ObserveThemeSettingsUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetDynamicColorUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetThemeModeUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetThemePaletteUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,6 +46,10 @@ internal class SettingsViewModel(
     accountRepository: AccountRepository,
     appVersionRepository: AppVersionRepository,
     observeLastBackup: ObserveLastBackupUseCase,
+    observeThemeSettings: ObserveThemeSettingsUseCase,
+    private val setThemePalette: SetThemePaletteUseCase,
+    private val setThemeMode: SetThemeModeUseCase,
+    private val setDynamicColor: SetDynamicColorUseCase,
 ) : ViewModel() {
 
     private val versionName = appVersionRepository.versionName
@@ -64,7 +72,8 @@ internal class SettingsViewModel(
         biometricsAvailable,
         biometricsUpdating,
         observeLastBackup(),
-    ) { account, lockInfo, autofill, biometrics, updatingBiometrics, lastBackup ->
+        observeThemeSettings(),
+    ) { account, lockInfo, autofill, biometrics, updatingBiometrics, lastBackup, theme ->
         SettingsUiState(
             autofillEnabled = autofill.systemAutofillEnabled,
             chromeAutofillEnabled = autofill.chromeAutofillEnabled,
@@ -74,6 +83,9 @@ internal class SettingsViewModel(
             version = versionName,
             lastBackupAt = lastBackup?.finishedAt,
             lockTimeout = lockInfo.autoLockTimeout,
+            palette = theme.palette,
+            themeMode = theme.mode,
+            dynamicColor = theme.dynamicColor,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -108,6 +120,18 @@ internal class SettingsViewModel(
 
             is SettingsUiEvent.SetAutoLockTimeout -> viewModelScope.launch {
                 lockInfoRepository.setAutoLockTimeout(event.timeout)
+            }
+
+            is SettingsUiEvent.SetThemePalette -> viewModelScope.launch {
+                setThemePalette(event.palette)
+            }
+
+            is SettingsUiEvent.SetThemeMode -> viewModelScope.launch {
+                setThemeMode(event.mode)
+            }
+
+            is SettingsUiEvent.SetDynamicColor -> viewModelScope.launch {
+                setDynamicColor(event.enabled)
             }
 
             is SettingsUiEvent.SetAutofill -> when {

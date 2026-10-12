@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme_palette">Color palette</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Same as system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_dynamic_color">Wallpaper colors</string>
+    <string name="settings_theme_dynamic_color_description">Use the colors the system derives from your wallpaper</string>
+    <string name="settings_palette_system">System colors</string>
+    <string name="settings_palette_red">Red</string>
+
     <string name="settings_security">Security</string>
     <string name="settings_use_biometrics">Use Biometrics</string>
     <string name="settings_use_biometrics_description">Unlock KeyStan with your fingerprint or face</string>

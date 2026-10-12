@@ -30,6 +30,7 @@ ksp = "2.3.11"
 datastore = "1.2.1"
 protobuf = "0.10.0"
 protoc = "4.36.2"
+materialColorUtilities = "4.1.1"
 coroutines = "1.11.0"
 bcrypt = "0.10.2"
 biometric = "1.4.0-alpha07"
@@ -105,6 +106,11 @@ androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", v
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled-jvm", version.ref = "sqlite" }
 
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+
+# The reference implementation of Material's HCT colour space and its schemes, ported to Kotlin.
+# Deliberately not material-kolor: that one is a Compose library, and this is only colour maths, so
+# nothing here can disagree with the Compose BOM.
+material-color-utilities = { group = "com.materialkolor", name = "material-color-utilities", version.ref = "materialColorUtilities" }
 
 at-favre-bcrypt = { group = "at.favre.lib", name = "bcrypt", version.ref = "bcrypt" }
 

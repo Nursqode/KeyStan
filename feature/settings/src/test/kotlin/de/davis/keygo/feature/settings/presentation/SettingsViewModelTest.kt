@@ -20,6 +20,8 @@ import de.davis.keygo.core.security.crypto.FakeKeyStoreManager
 import de.davis.keygo.core.security.domain.ExportArk
 import de.davis.keygo.core.security.domain.model.KeyId
 import de.davis.keygo.core.security.domain.model.LockInfo
+import de.davis.keygo.core.ui.theme.KeyPalette
+import de.davis.keygo.core.ui.theme.ThemeMode
 import de.davis.keygo.core.util.FakeSnackbarManager
 import de.davis.keygo.core.util.assertSuccess
 import de.davis.keygo.core.util.domain.model.snackbar.SnackbarMessage
@@ -33,6 +35,11 @@ import de.davis.keygo.feature.backup.domain.model.BackupResult
 import de.davis.keygo.feature.backup.domain.model.FileFormat
 import de.davis.keygo.feature.backup.domain.usecase.ObserveLastBackupUseCase
 import de.davis.keygo.feature.settings.R
+import de.davis.keygo.feature.settings.domain.model.ThemeSettings
+import de.davis.keygo.feature.settings.domain.usecase.ObserveThemeSettingsUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetDynamicColorUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetThemeModeUseCase
+import de.davis.keygo.feature.settings.domain.usecase.SetThemePaletteUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,6 +72,7 @@ class SettingsViewModelTest {
     private val appVersionRepository = FakeAppVersionRepository()
     private val backupJobRepository = FakeBackupJobRepository()
     private val lockInfoRepository = FakeLockInfoRepository()
+    private val themeSettingsRepository = FakeThemeSettingsRepository()
     private val session = FakeSession(startUnlocked = true)
     private val keyStoreManager = FakeKeyStoreManager()
     private val biometricCrypto = FakeBiometricCrypto(keyStoreManager)
@@ -96,6 +104,10 @@ class SettingsViewModelTest {
         accountRepository = accountRepository,
         appVersionRepository = appVersionRepository,
         observeLastBackup = ObserveLastBackupUseCase(backupJobRepository),
+        observeThemeSettings = ObserveThemeSettingsUseCase(themeSettingsRepository),
+        setThemePalette = SetThemePaletteUseCase(themeSettingsRepository),
+        setThemeMode = SetThemeModeUseCase(themeSettingsRepository),
+        setDynamicColor = SetDynamicColorUseCase(themeSettingsRepository),
     )
 
     private val biometricUpdateFailed =
@@ -358,4 +370,55 @@ class SettingsViewModelTest {
 
             assertTrue(chromeAutofillRepository.openCalled)
         }
+
+    @Test
+    fun `state carries the stored theme settings`() = runTest(dispatcher) {
+        themeSettingsRepository.state.value = ThemeSettings(
+            palette = KeyPalette.Red,
+            mode = ThemeMode.Dark,
+            dynamicColor = false,
+        )
+        val vm = viewModel()
+
+        val state = vm.state.first { it.palette == KeyPalette.Red }
+
+        assertEquals(ThemeMode.Dark, state.themeMode)
+        assertFalse(state.dynamicColor)
+    }
+
+    @Test
+    fun `choosing a palette persists it and updates the ui`() = runTest(dispatcher) {
+        val vm = viewModel()
+        vm.state.first()
+
+        vm.onEvent(SettingsUiEvent.SetThemePalette(KeyPalette.Red))
+
+        vm.state.first { it.palette == KeyPalette.Red }
+        assertEquals(listOf(KeyPalette.Red), themeSettingsRepository.setPaletteCalls)
+        assertEquals(KeyPalette.Red, themeSettingsRepository.state.value.palette)
+    }
+
+    @Test
+    fun `choosing a theme mode persists it and updates the ui`() = runTest(dispatcher) {
+        val vm = viewModel()
+        vm.state.first()
+
+        vm.onEvent(SettingsUiEvent.SetThemeMode(ThemeMode.Light))
+
+        vm.state.first { it.themeMode == ThemeMode.Light }
+        assertEquals(listOf(ThemeMode.Light), themeSettingsRepository.setModeCalls)
+        assertEquals(ThemeMode.Light, themeSettingsRepository.state.value.mode)
+    }
+
+    @Test
+    fun `turning wallpaper colors off persists it and updates the ui`() = runTest(dispatcher) {
+        val vm = viewModel()
+        vm.state.first()
+
+        vm.onEvent(SettingsUiEvent.SetDynamicColor(enabled = false))
+
+        vm.state.first { !it.dynamicColor }
+        assertEquals(listOf(false), themeSettingsRepository.setDynamicColorCalls)
+        assertFalse(themeSettingsRepository.state.value.dynamicColor)
+    }
 }
