@@ -151,46 +151,19 @@ internal fun ItemListContent(
                     onDeleteSelected = onDeleteSelectedRequest,
                     onPinSelected = onPinSelectedRequest,
                 )
-            else {
-                // The header carries the product name and the installed version, and the search
-                // field sits on that same coloured surface - so the bar has a background of its own
-                // rather than a grey slab behind a rounded field.
-                val context = LocalContext.current
-                val appVersion = remember(context) {
-                    runCatching {
-                        context.packageManager.getPackageInfo(context.packageName, 0).versionName
-                    }.getOrNull().orEmpty()
-                }
-
-                Surface(color = MaterialTheme.colorScheme.primaryContainer) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(ListScreenR.string.app_header_title, appVersion),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-
-                        AppBarWithSearch(
-                            state = searchBarState,
-                            inputField = searchInputField,
-                            scrollBehavior = scrollBehavior,
-                            // Transparent: the surface above already paints the header, and letting
-                            // the app bar paint its own container would cover it with grey again.
-                            // The bar's own container is the grey slab whose square corners used to
-                            // show around the rounded field; the surface around it paints instead.
-                            colors = SearchBarDefaults.appBarWithSearchColors(
-                                appBarContainerColor = Color.Transparent,
-                                scrolledAppBarContainerColor = Color.Transparent,
-                            ),
-                        )
-                    }
-                }
-            }
+            else
+                // No title and no app-bar background of its own: the search field is the whole
+                // header. Only the container is cleared, so the grey slab that used to show around
+                // the rounded field stays gone.
+                AppBarWithSearch(
+                    state = searchBarState,
+                    inputField = searchInputField,
+                    scrollBehavior = scrollBehavior,
+                    colors = SearchBarDefaults.appBarWithSearchColors(
+                        appBarContainerColor = Color.Transparent,
+                        scrolledAppBarContainerColor = Color.Transparent,
+                    ),
+                )
 
             val searchResultContent: @Composable ColumnScope.() -> Unit = {
                 val scope = rememberCoroutineScope()
