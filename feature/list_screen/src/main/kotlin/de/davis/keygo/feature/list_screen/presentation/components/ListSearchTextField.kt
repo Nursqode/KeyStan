@@ -27,7 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import de.davis.keygo.feature.list_screen.R
 import de.davis.keygo.feature.list_screen.presentation.model.FilterBottomSheetState
@@ -56,6 +58,20 @@ internal fun ListSearchTextField(
         allowFocus = true
     }
 
+    // The gate above also swallows the focus request that expanding the bar makes, which is why
+    // tapping once opened the search screen and a second tap was needed before anything could be
+    // typed. Request the focus ourselves once the bar is expanding and the gate is open.
+    val focusRequester = remember { FocusRequester() }
+    val isExpanding by remember(searchBarState) {
+        derivedStateOf { searchBarState.targetValue == SearchBarValue.Expanded }
+    }
+    LaunchedEffect(isExpanding, allowFocus) {
+        if (isExpanding && allowFocus) {
+            awaitFrame()
+            focusRequester.requestFocus()
+        }
+    }
+
     val scope = rememberCoroutineScope()
     SearchBarDefaults.InputField(
         textFieldState = searchTextFieldState,
@@ -66,6 +82,7 @@ internal fun ListSearchTextField(
         },
         modifier = Modifier
             .fillMaxWidth()
+            .focusRequester(focusRequester)
             .focusProperties {
                 canFocus = allowFocus
             },
