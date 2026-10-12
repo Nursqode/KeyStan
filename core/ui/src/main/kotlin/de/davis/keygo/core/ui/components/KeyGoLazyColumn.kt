@@ -184,11 +184,16 @@ fun <ID : Any> KeyGoColumn(
                             Spacer(modifier = Modifier.headerSize())
                         }
                     },
-                    supportingContent = {
-                        SupportingText(
-                            typeLabel = item.itemType.presentation.first,
-                            status = item.status,
-                        )
+                    // The type label ("Login", "Card") is what the icon already says, and it cost a
+                    // second line under every row. Only a status is worth the height now, so the
+                    // common row is a single line and a warning still gets its line.
+                    supportingContent = item.status?.let { status ->
+                        {
+                            SupportingText(
+                                typeLabel = item.itemType.presentation.first,
+                                status = status,
+                            )
+                        }
                     },
                     selected = id in selectedItemIds,
                 ) {
